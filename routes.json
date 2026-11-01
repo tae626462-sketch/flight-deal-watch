@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-11-01T08:31:38.462Z",
+ "updatedAt": "2026-11-01T09:00:35.383Z",
  "routes": [
   {
    "id": "r_k7vhe22",
@@ -14,7 +14,7 @@
    "timeFrom": "18:00",
    "timeTo": "23:59",
    "directOnly": true,
-   "targetPrice": 16000,
+   "targetPrice": 14000,
    "dropPct": 10,
    "active": true
   },
