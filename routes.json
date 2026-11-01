@@ -1,23 +1,6 @@
 {
- "updatedAt": "2026-11-01T08:25:44.266Z",
+ "updatedAt": "2026-11-01T08:25:54.227Z",
  "routes": [
-  {
-   "id": "r_example1",
-   "name": "เที่ยวญี่ปุ่นปีใหม่",
-   "origin": "BKK",
-   "destination": "TYO",
-   "tripType": "roundtrip",
-   "departFrom": "2026-12-20",
-   "departTo": "2027-01-10",
-   "stayMin": 4,
-   "stayMax": 8,
-   "timeFrom": "",
-   "timeTo": "",
-   "directOnly": false,
-   "targetPrice": 12000,
-   "dropPct": 10,
-   "active": true
-  },
   {
    "id": "r_k7vhe22",
    "name": "Korea trip",
