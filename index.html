@@ -130,6 +130,32 @@ header::after{content:"";position:absolute;inset:auto -40px -60px auto;width:220
 .deal .lk{display:flex;gap:6px;margin-top:3px;justify-content:flex-end}
 .deal a{font-size:11.5px;color:var(--accent);text-decoration:none;border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:1px 7px}
 
+/* ภาพรวมราคาตอนนี้ */
+.stats-box{margin:0 16px 14px;padding:12px 12px 10px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}
+.st-h{display:flex;align-items:baseline;gap:8px;font-size:12.5px;color:var(--ink-2);margin-bottom:8px}
+.st-h b{color:var(--ink);font-size:13.5px}
+.st-h span{margin-left:auto;color:var(--ink-3)}
+.st-main{font-size:13px;color:var(--ink-2);margin-bottom:8px}
+.st-main b{font-family:"IBM Plex Mono",monospace;font-size:16px;color:var(--ink)}
+.rb{position:relative;height:10px;border-radius:99px;background:var(--line);margin:6px 2px 4px}
+.rb-band{position:absolute;top:0;bottom:0;border-radius:99px;background:var(--accent);opacity:.85}
+.rb-med{position:absolute;top:-3px;width:2px;height:16px;background:var(--ink);border-radius:2px;transform:translateX(-1px)}
+.rb-tgt{position:absolute;top:-5px;width:10px;height:10px;background:var(--good);border:2px solid var(--surface-2);transform:translateX(-5px) rotate(45deg);border-radius:2px}
+.rb-lbl{display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink-3);font-family:"IBM Plex Mono",monospace}
+.daychart{display:block;width:100%;height:60px;margin-top:10px;touch-action:pan-y;cursor:crosshair}
+.daychart .b-cheap{fill:var(--accent)}
+.daychart .b-norm{fill:var(--accent);opacity:.28}
+.daychart .b-sel{fill:var(--ink);opacity:1}
+.daychart .base{stroke:var(--line);stroke-width:1}
+.dc-axis{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-3);margin-top:2px}
+.st-read{font-size:12.5px;color:var(--ink-2);margin-top:6px;min-height:1.5em}
+.st-read b{color:var(--ink);font-family:"IBM Plex Mono",monospace}
+.st-cta{width:100%;margin-top:8px;border:1px dashed var(--accent);background:var(--accent-soft);color:var(--accent);border-radius:10px;padding:9px;font-weight:600;font-size:13.5px}
+.st-note{font-size:12px;color:var(--ink-2);margin-top:6px}
+.qchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.qchips button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 10px;font-size:12.5px}
+.qchips button b{font-family:"IBM Plex Mono",monospace}
+
 .empty{text-align:center;padding:40px 20px;color:var(--ink-2)}
 .empty svg{width:72px;height:72px;color:var(--ink-3);margin-bottom:10px}
 .empty h3{margin:0 0 4px;color:var(--ink);font-size:17px}
@@ -286,7 +312,8 @@ footer{text-align:center;color:var(--ink-3);font-size:12px;margin:24px 0 0}
 
       <div class="fld"><label for="fTarget">แจ้งเตือนเมื่อราคาไม่เกิน</label>
         <div class="prefix"><i>฿</i><input class="inp" type="number" id="fTarget" min="0" step="100" inputmode="numeric" placeholder="เช่น 9000"></div>
-        <div class="hint">ราคารวมต่อ 1 คน (ไป-กลับรวมขากลับแล้ว) · เว้นว่าง = ไม่ใช้ราคาเป้า</div>
+        <div class="hint" id="targetHint">ราคารวมต่อ 1 คน (ไป-กลับรวมขากลับแล้ว)</div>
+        <div class="qchips" id="targetChips"></div>
       </div>
 
       <div class="fld"><label for="fDrop">แจ้งเตือนเมื่อราคาลดลงจากรอบก่อนเกิน</label>
@@ -450,7 +477,8 @@ async function syncRoutes() {
     toast('ซิงค์แล้ว — ระบบเริ่มสแกนรอบใหม่ ประมาณ 1–2 นาที', 3500);
     return true;
   } catch (e) {
-    toast('ซิงค์ไม่สำเร็จ: ' + e.message, 4500);
+    toast(e.status === 403 ? 'ซิงค์ไม่สำเร็จ: token ไม่มีสิทธิ์เขียน repo นี้ (แก้ที่ GitHub → token → เลือก repo + Contents: Read and write)'
+      : e.status === 401 ? 'ซิงค์ไม่สำเร็จ: token ไม่ถูกต้อง หรือหมดอายุ' : 'ซิงค์ไม่สำเร็จ: ' + e.message, 5500);
     if (btn) { btn.disabled = false; btn.textContent = 'ซิงค์ตอนนี้'; }
     return false;
   }
@@ -498,6 +526,51 @@ function dealRow(r, d, i) {
       <div>${esc(d.airlineName || d.airline)} ${esc(d.flight)} · ${stops(d.stops)}${d.from && d.to ? ' · ' + esc(d.from) + '→' + esc(d.to) : ''}</div></div>
     <div><div class="pr">${baht(d.price)}</div><div class="lk">${d.link ? `<a href="${esc(d.link)}" target="_blank" rel="noopener">จอง</a>` : ''}<a href="${esc(gfLink(r, d))}" target="_blank" rel="noopener">Google</a></div></div></div>`;
 }
+// ---------- ภาพรวมราคาตอนนี้ ----------
+const DC_W = 300, DC_H = 56;
+function statsBlock(r, rec) {
+  const s = rec.stats;
+  if (!s || !s.byDate || !s.byDate.length) return '';
+  const target = Number(r.targetPrice || 0);
+  const lo = Math.min(s.min, target || s.min), hi = Math.max(s.max, target || s.max), span = (hi - lo) || 1;
+  const pct = v => Math.max(0, Math.min(100, (v - lo) / span * 100));
+  const bandL = pct(s.p25), bandW = Math.max(2, pct(s.p75) - bandL);
+
+  const n = s.byDate.length, gap = n > 60 ? 1 : 2, bw = Math.max(1, (DC_W - gap * (n - 1)) / n);
+  const cheapLine = target || s.p25;
+  const bars = s.byDate.map((x, i) => {
+    const h = Math.max(3, x.p / s.max * (DC_H - 2));
+    return `<rect class="${x.p <= cheapLine ? 'b-cheap' : 'b-norm'}" x="${(i * (bw + gap)).toFixed(2)}" y="${(DC_H - h).toFixed(1)}" width="${bw.toFixed(2)}" height="${h.toFixed(1)}" rx="${Math.min(2, bw / 2).toFixed(1)}"/>`;
+  }).join('');
+  const cheapest = s.byDate.reduce((a, b) => b.p < a.p ? b : a);
+  const hitDays = target ? s.byDate.filter(x => x.p <= target).length : 0;
+
+  const foot = target
+    ? `<div class="st-note">🎯 เป้า ${baht(target)} · ${hitDays ? `<b>${hitDays}</b> จาก ${n} วันราคาถึงเป้าแล้ว` : `ยังไม่มีวันไหนถึงเป้า (ถูกสุด ${baht(s.min)})`}</div>`
+    : `<button class="st-cta" data-act="settarget" data-id="${r.id}" data-v="${s.suggest}">💡 ตั้งเป้า ${baht(s.suggest)} — ถูกกว่าราคาส่วนใหญ่</button>`;
+
+  return `<div class="stats-box">
+    <div class="st-h"><b>ราคาตอนนี้</b>ถูกสุดของแต่ละวัน<span>${n} วัน</span></div>
+    <div class="st-main">ส่วนใหญ่ <b>${baht(s.p25)}–${baht(s.p75)}</b> · กลางๆ ${baht(s.median)}</div>
+    <div class="rb" aria-label="ช่วงราคา"><i class="rb-band" style="left:${bandL}%;width:${bandW}%"></i><i class="rb-med" style="left:${pct(s.median)}%"></i>${target ? `<i class="rb-tgt" style="left:${pct(target)}%"></i>` : ''}</div>
+    <div class="rb-lbl"><span>${baht(lo)}</span><span>${baht(hi)}</span></div>
+    <svg class="daychart" viewBox="0 0 ${DC_W} ${DC_H + 1}" preserveAspectRatio="none" data-id="${r.id}" role="img" aria-label="ราคาถูกสุดรายวัน">${bars}<line class="base" x1="0" x2="${DC_W}" y1="${DC_H + .5}" y2="${DC_H + .5}"/></svg>
+    <div class="dc-axis"><span>${thD(s.byDate[0].d)}</span><span>${thD(s.byDate[n - 1].d)}</span></div>
+    <div class="st-read" id="rd-${r.id}">ถูกสุด <b>${baht(cheapest.p)}</b> ${thD(cheapest.d, true)} · แตะกราฟเพื่อดูรายวัน</div>
+    ${foot}
+  </div>`;
+}
+function readDay(svg, clientX) {
+  const rec = data.routes?.[svg.dataset.id]; const s = rec?.stats; if (!s) return;
+  const box = svg.getBoundingClientRect();
+  const n = s.byDate.length;
+  const i = Math.max(0, Math.min(n - 1, Math.floor((clientX - box.left) / box.width * n)));
+  const x = s.byDate[i];
+  svg.querySelectorAll('rect').forEach((el, k) => el.classList.toggle('b-sel', k === i));
+  const tag = x.p <= s.p25 ? ' · ถูกกว่าปกติ' : x.p >= s.p75 ? ' · แพงกว่าปกติ' : '';
+  document.getElementById('rd-' + svg.dataset.id).innerHTML = `${thD(x.d, true)} ราคาเริ่ม <b>${baht(x.p)}</b>${tag}`;
+}
+
 function card(r) {
   const rec = data.routes?.[r.id] || {};
   const c = rec.cheapest, target = Number(r.targetPrice || 0);
@@ -549,6 +622,7 @@ function card(r) {
     </div>
     <div class="perf"><i></i></div>
     ${priceBlock}
+    ${r.active === false ? '' : statsBlock(r, rec)}
     <div class="actions">
       ${deals ? `<button class="primary" data-act="deals" data-id="${r.id}">${ICON.list}ท็อป ${Math.min(rec.top.length, 8)}</button>` : ''}
       <button data-act="edit" data-id="${r.id}">${ICON.edit}แก้ไข</button>
@@ -605,6 +679,15 @@ function openRoute(id) {
   $('#fStayMin').value = r.stayMin ?? 3; $('#fStayMax').value = r.stayMax ?? 7;
   $('#fDirect').checked = !!r.directOnly; $('#fTarget').value = r.targetPrice || ''; $('#fDrop').value = String(r.dropPct ?? 0);
   setTrip(r.tripType || 'roundtrip'); setTime(r.timeFrom || '', r.timeTo || '');
+  const st = id && data.routes?.[id]?.stats;
+  if (st) {
+    $('#targetHint').innerHTML = `ราคาตอนนี้: ส่วนใหญ่ <b>${baht(st.p25)}–${baht(st.p75)}</b> · แตะเพื่อเลือกเป้า`;
+    $('#targetChips').innerHTML = [['ถูกสุดตอนนี้', st.min], ['ถูกกว่าปกติ', st.suggest], ['ราคากลาง', st.median]]
+      .map(([l, v]) => `<button type="button" data-v="${v}">${l} <b>${baht(v)}</b></button>`).join('');
+  } else {
+    $('#targetHint').textContent = 'ยังไม่รู้ว่าควรตั้งเท่าไหร่? เว้นว่างไว้ก่อน ระบบจะสแกนราคาปัจจุบัน แล้วส่งสรุปพร้อมราคาแนะนำเข้า Telegram';
+    $('#targetChips').innerHTML = '';
+  }
   $('#btnDelete').style.display = id ? '' : 'none';
   $('#formErr').textContent = ''; codeHint();
   $('#dlgRoute').showModal();
@@ -649,7 +732,7 @@ function openSettings() {
   $('#sStatus').className = 'statusline'; markTheme();
   $('#dlgSettings').showModal();
 }
-function readSettings() { return { owner: $('#sOwner').value.trim(), repo: $('#sRepo').value.trim(), branch: $('#sBranch').value.trim() || 'main', token: $('#sToken').value.trim() }; }
+function readSettings() { return { owner: $('#sOwner').value.trim(), repo: $('#sRepo').value.trim(), branch: $('#sBranch').value.trim() || 'main', token: $('#sToken').value.replace(/\s/g, '') }; }
 function applyTheme(v) { if (v) document.documentElement.dataset.theme = v; else delete document.documentElement.dataset.theme; }
 function markTheme() { const v = jget(LS.theme, ''); document.querySelectorAll('#segTheme button').forEach(b => b.classList.toggle('on', b.dataset.v === v)); }
 
@@ -688,11 +771,25 @@ $('#list').addEventListener('click', async e => {
   const id = b.dataset.id;
   if (b.dataset.act === 'edit') openRoute(id);
   if (b.dataset.act === 'deals') document.getElementById('deals-' + id)?.classList.toggle('open');
+  if (b.dataset.act === 'settarget') {
+    const r = routes.find(x => x.id === id); r.targetPrice = Number(b.dataset.v);
+    dirty = true; saveLocal(); render();
+    toast('ตั้งเป้า ' + baht(r.targetPrice) + ' แล้ว');
+    if (connected()) await syncRoutes();
+  }
   if (b.dataset.act === 'toggle') {
     const r = routes.find(x => x.id === id); r.active = r.active === false;
     dirty = true; saveLocal(); render();
     if (connected()) await syncRoutes();
   }
+});
+
+['pointerdown', 'pointermove'].forEach(ev => $('#list').addEventListener(ev, e => {
+  const svg = e.target.closest('svg.daychart');
+  if (svg && (ev === 'pointerdown' || e.pointerType === 'mouse' || e.buttons)) readDay(svg, e.clientX);
+}));
+$('#targetChips').addEventListener('click', e => {
+  const b = e.target.closest('button[data-v]'); if (b) $('#fTarget').value = b.dataset.v;
 });
 
 $('#btnSaveSettings').onclick = async () => {
@@ -707,11 +804,17 @@ $('#btnSaveSettings').onclick = async () => {
 $('#btnTest').onclick = async () => {
   const prev = settings; settings = readSettings();
   const st = $('#sStatus'); st.className = 'statusline show'; st.textContent = 'กำลังทดสอบ…';
+  if (/[^\x21-\x7e]/.test(settings.token) || !/^(github_pat_|ghp_)/.test(settings.token)) {
+    st.textContent = '✗ ช่อง token ไม่ใช่ GitHub token — ลบให้หมด แล้ววาง token ที่ขึ้นต้นด้วย github_pat_';
+    settings = prev; return;
+  }
   try {
     const repo = await gh('');
     const ok = [];
     ok.push('✓ เข้าถึง repo ' + repo.full_name + ' ได้');
-    ok.push(repo.permissions?.push ? '✓ มีสิทธิ์เขียนไฟล์' : '✗ token ไม่มีสิทธิ์เขียน (Contents: Read and write)');
+    // ทดสอบสิทธิ์เขียนจริงของ token (สร้าง blob ว่าง ไม่กระทบไฟล์ใดๆ)
+    try { await gh('/git/blobs', { method:'POST', body: JSON.stringify({ content:'', encoding:'utf-8' }) }); ok.push('✓ token มีสิทธิ์เขียนไฟล์'); }
+    catch (e) { ok.push('✗ token เขียนไฟล์ไม่ได้ — แก้ token: เลือก repo นี้ + Contents: Read and write'); }
     try { await gh('/actions/workflows/scan.yml'); ok.push('✓ พบ workflow สแกนราคา'); } catch { ok.push('✗ ไม่พบ .github/workflows/scan.yml'); }
     const f = await ghGetFile('routes.json'); ok.push(f.sha ? '✓ พบ routes.json' : '• ยังไม่มี routes.json (จะสร้างให้ตอนซิงค์)');
     st.innerHTML = ok.map(esc).join('<br>');
