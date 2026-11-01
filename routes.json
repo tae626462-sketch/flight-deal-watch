@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-11-01T16:35:10.346Z",
+ "updatedAt": "2026-11-01T16:50:37.702Z",
  "prefs": {
   "digest": true,
   "digestHour": 7
@@ -15,9 +15,9 @@
    "departTo": "2026-12-14",
    "stayMin": 3,
    "stayMax": 7,
-   "timeFrom": "18:00",
-   "timeTo": "23:59",
-   "directOnly": false,
+   "timeFrom": "",
+   "timeTo": "",
+   "directOnly": true,
    "notifyNew": true,
    "targetPrice": 15000,
    "dropPct": 10,
