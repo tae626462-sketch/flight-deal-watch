@@ -12,6 +12,9 @@ const MARKETS = (process.env.TP_MARKETS ?? 'th,').split(',').map(s => s.trim());
 const TEST_ALERT = process.env.TEST_ALERT === 'true';
 const CURRENCY = 'thb';
 const HISTORY_MAX = 240;
+const NEW_MIN_DROP = 100; // บาท — ตั๋วใหม่ต้องถูกกว่าเดิมอย่างน้อยเท่านี้ถึงจะแจ้ง
+const REPO = process.env.GITHUB_REPOSITORY || ''; // owner/repo (GitHub Actions ใส่ให้อัตโนมัติ)
+const APP_URL = REPO ? `https://${REPO.split('/')[0].toLowerCase()}.github.io/${REPO.split('/')[1]}/` : '';
 const ROUTES_FILE = 'routes.json';
 const DATA_FILE = 'data/prices.json';
 const API = 'https://api.travelpayouts.com/aviasales/v3/prices_for_dates';
@@ -211,7 +214,7 @@ function gflightsLink(route, d) {
   return 'https://www.google.com/travel/flights?q=' + encodeURIComponent(q) + '&curr=THB&hl=th';
 }
 
-function alertMessage(route, d, reason) {
+function alertMessage(route, d, reason, deals) {
   const title = route.name ? `${esc(route.name)}\n` : '';
   const stops = (n) => n === 0 ? 'บินตรง' : `ต่อ ${n} ครั้ง`;
   const lines = [
@@ -225,8 +228,46 @@ function alertMessage(route, d, reason) {
   if (d.link) links.push(`<a href="${d.link}">ดู/จองตั๋วนี้</a>`);
   links.push(`<a href="${gflightsLink(route, d)}">เทียบ Google Flights</a>`);
   lines.push('🔗 ' + links.join(' · '));
+  const others = (deals || []).slice(1, 4);
+  if (others.length) {
+    lines.push('', '<b>ตัวเลือกถัดไป</b>');
+    others.forEach((o, i) => lines.push(`${i + 2}. ${baht(o.price)} · ${thDate(o.depDate)}${o.depTime ? ' ' + o.depTime : ''} · ${esc(o.airlineName)}${o.retDate ? ' · พัก ' + dayDiff(o.depDate, o.retDate) + ' วัน' : ''}`));
+  }
+  if (APP_URL) lines.push('', `📱 <a href="${APP_URL}">เปิดแอพจับตั๋วถูก</a>`);
   lines.push('<i>ราคาจากแคชการค้นหาล่าสุด ควรเช็คราคาจริงก่อนจอง</i>');
   return lines.join('\n');
+}
+
+// สรุปราคาประจำวัน (ส่งรอบสแกนแรกหลังเวลาที่ตั้ง วันละครั้ง)
+function digestMessage(routes, recs, nowIso) {
+  const nowMs = Date.parse(nowIso);
+  const bkk = new Date(nowMs + 7 * 3600e3);
+  const head = `☀️ <b>สรุปราคาตั๋ว</b> ${bkk.toLocaleDateString('th-TH', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' })}`;
+  const blocks = [];
+  for (const r of routes) {
+    if (r.active === false) continue;
+    const rec = recs[r.id] || {};
+    const c = rec.cheapest;
+    const title = `<b>${r.origin} → ${r.destination}</b>${r.name ? ' · ' + esc(r.name) : ''} ${r.tripType === 'oneway' ? '(เที่ยวเดียว)' : '(ไป-กลับ)'}`;
+    if (!c) { blocks.push(`${title}\nยังไม่พบราคาในช่วงที่ตั้งไว้`); continue; }
+    // เทียบกับราคาเมื่อ ~24 ชม.ก่อน
+    const old = (rec.history || []).filter(h => Date.parse(h.t) <= nowMs - 20 * 3600e3).pop();
+    let chg = '';
+    if (old) {
+      const diff = c.price - old.p;
+      chg = diff < 0 ? ` 🔻${baht(-diff)}` : diff > 0 ? ` 🔺${baht(diff)}` : ' (เท่าเดิม)';
+    }
+    const t = Number(r.targetPrice || 0);
+    const tgt = !t ? '🎯 ยังไม่ตั้งเป้า' : c.price <= t ? `✅ ถึงเป้า ${baht(t)}` : `🎯 ห่างเป้า ${baht(c.price - t)}`;
+    const s = rec.stats;
+    blocks.push([
+      title,
+      `💰 ถูกสุด <b>${baht(c.price)}</b>${chg} · ${thDate(c.depDate)}${c.depTime ? ' ' + c.depTime : ''} · ${esc(c.airlineName)}`,
+      s ? `ส่วนใหญ่ ${baht(s.p25)}–${baht(s.p75)} · ${tgt}` : tgt,
+    ].join('\n'));
+  }
+  if (!blocks.length) return '';
+  return [head, '', blocks.join('\n\n'), APP_URL ? `\n📱 <a href="${APP_URL}">เปิดแอพจับตั๋วถูก</a>` : ''].join('\n');
 }
 
 async function main() {
@@ -236,7 +277,9 @@ async function main() {
   }
   if (!TP_TOKEN) { console.error('ไม่พบ TP_TOKEN — ตั้งใน Settings › Secrets and variables › Actions'); process.exit(1); }
 
-  const routes = JSON.parse(await fs.readFile(ROUTES_FILE, 'utf8')).routes || [];
+  const routesFile = JSON.parse(await fs.readFile(ROUTES_FILE, 'utf8'));
+  const routes = routesFile.routes || [];
+  const prefs = { digest: true, digestHour: 7, ...(routesFile.prefs || {}) };
   let data = { routes: {} };
   try { data = JSON.parse(await fs.readFile(DATA_FILE, 'utf8')); data.routes ||= {}; } catch { /* ไฟล์ใหม่ */ }
 
@@ -286,8 +329,12 @@ async function main() {
       if (!reason && dropPct && prevPrice && best.price <= prevPrice * (1 - dropPct / 100)) {
         reason = `ราคาลด ${Math.round((1 - best.price / prevPrice) * 100)}% (จาก ${baht(prevPrice)})`;
       }
+      // เจอตั๋วใหม่ที่ถูกกว่าตัวเลือกเดิม (ถูกลงอย่างน้อย ฿100 กันแจ้งเตือนจากราคาขยับแค่ 1–2 บาท)
+      if (!reason && route.notifyNew !== false && prevPrice && best.price <= prevPrice - NEW_MIN_DROP) {
+        reason = `เจอตั๋วใหม่ถูกกว่าเดิม ${baht(prevPrice - best.price)} (เดิม ${baht(prevPrice)})`;
+      }
       if (reason) {
-        const sent = await sendTelegram(alertMessage(route, best, reason));
+        const sent = await sendTelegram(alertMessage(route, best, reason, res.deals));
         if (sent) { alerts++; if (target && best.price <= target) rec.lastAlertPrice = best.price; rec.lastAlertAt = now; }
       }
     } else {
@@ -298,7 +345,17 @@ async function main() {
   }
 
   await fs.mkdir('data', { recursive: true });
-  await fs.writeFile(DATA_FILE, JSON.stringify({ updatedAt: now, currency: 'THB', routes: next }, null, 1));
+  // --- สรุปราคาประจำวัน: ส่งรอบแรกที่ถึงเวลาที่ตั้ง (เวลาไทย) วันละครั้ง / หรือส่งทันทีตอนกดทดสอบ ---
+  const bkk = new Date(Date.parse(now) + 7 * 3600e3);
+  const bkkDate = bkk.toISOString().slice(0, 10);
+  let lastDigest = data.lastDigest || '';
+  const due = prefs.digest !== false && bkk.getUTCHours() >= Number(prefs.digestHour ?? 7) && lastDigest !== bkkDate;
+  if (due || TEST_ALERT) {
+    const msg = digestMessage(routes, next, now);
+    if (msg && await sendTelegram(msg)) { if (due) lastDigest = bkkDate; console.log('ส่งสรุปราคาประจำวันแล้ว'); }
+  }
+
+  await fs.writeFile(DATA_FILE, JSON.stringify({ updatedAt: now, currency: 'THB', lastDigest, routes: next }, null, 1));
   console.log(`เสร็จ: ${routes.length} เส้นทาง, แจ้งเตือน ${alerts} ครั้ง`);
 }
 
