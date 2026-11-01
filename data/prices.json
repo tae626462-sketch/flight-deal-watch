@@ -1,124 +1,92 @@
 {
- "updatedAt": "2026-11-01T15:15:01.812Z",
+ "updatedAt": "2026-11-01T16:35:19.025Z",
  "currency": "THB",
  "lastDigest": "2026-11-01",
  "routes": {
   "r_k7vhe22": {
-   "sig": "BKK|ICN|roundtrip|2026-12-09|2026-12-14|3|7|18:00|23:59|true",
+   "sig": "BKK|ICN|roundtrip|2026-12-09|2026-12-14|3|7|18:00|23:59|false",
    "history": [
     {
-     "t": "2026-11-01T08:58:53.902Z",
-     "p": 14652
-    },
-    {
-     "t": "2026-11-01T08:59:51.543Z",
-     "p": 14652
-    },
-    {
-     "t": "2026-11-01T09:00:43.531Z",
-     "p": 14652
-    },
-    {
-     "t": "2026-11-01T09:13:19.058Z",
-     "p": 14652
-    },
-    {
-     "t": "2026-11-01T12:29:21.539Z",
-     "p": 14651
-    },
-    {
-     "t": "2026-11-01T13:50:32.422Z",
-     "p": 14652
-    },
-    {
-     "t": "2026-11-01T13:56:46.765Z",
-     "p": 14652
-    },
-    {
-     "t": "2026-11-01T13:58:01.249Z",
-     "p": 14652
-    },
-    {
-     "t": "2026-11-01T15:15:01.812Z",
-     "p": 14652
+     "t": "2026-11-01T16:35:19.025Z",
+     "p": 11468
     }
    ],
-   "scannedAt": "2026-11-01T15:15:01.812Z",
+   "scannedAt": "2026-11-01T16:35:19.025Z",
    "status": "ok",
    "error": "",
-   "prevPrice": 14652,
+   "prevPrice": null,
    "cheapest": {
-    "price": 14652,
-    "airline": "ZE",
-    "airlineName": "Eastar Jet",
-    "flight": "ZE512",
+    "price": 11468,
+    "airline": "VN",
+    "airlineName": "Vietnam Airlines",
+    "flight": "VN626",
     "from": "BKK",
     "to": "ICN",
-    "depDate": "2026-12-10",
-    "depTime": "22:25",
+    "depDate": "2026-12-09",
+    "depTime": "18:05",
     "retDate": "2026-12-16",
-    "retTime": "19:50",
-    "stops": 0,
-    "retStops": 0,
-    "duration": 355,
-    "link": "https://www.aviasales.com/search/BKK1012ICN16121?t=TW17969415001796970000000355BKKICN17974506001797466200000380ICNBKK_8bee28f1c8c97e02fca01ba76cacb14a_35053&search_date=01112026&expected_price_uuid=01a19589-95cc-8030-a2c4-54e216a4382e&static_fare_key=TY%7CP1%7CH1%7CL0%7CCH0%7CR0%7CTBC0&itinerary_key=yLhsDlP9S4hiPvmWCTOTHA&origin_airports=1&destination_airports=0&expected_price_source=share&expected_price_currency=thb&expected_price=14652"
+    "retTime": "23:55",
+    "stops": 1,
+    "retStops": 1,
+    "duration": 360,
+    "link": "https://www.aviasales.com/search/BKK0912ICN16121?t=VN17968395001796942100001590BKKDADICN17974653001797506100000800ICNDADBKK_c572bfebd4289233643e6177b8562c6c_27371&search_date=25102026&expected_price_uuid=01a174e7-cf81-8030-eb46-c37d556b68a9&static_fare_key=TY%7CP1_JW%7CH1%7CL1_1_23%7CCH0%7CR0%7CTBC1&itinerary_key=qer5Hcbkvbkv5E30SwwbOg&origin_airports=1&destination_airports=0&expected_price_source=share&expected_price_currency=thb&expected_price=11468"
    },
    "top": [
     {
-     "price": 14652,
-     "airline": "ZE",
-     "airlineName": "Eastar Jet",
-     "flight": "ZE512",
+     "price": 11468,
+     "airline": "VN",
+     "airlineName": "Vietnam Airlines",
+     "flight": "VN626",
      "from": "BKK",
      "to": "ICN",
-     "depDate": "2026-12-10",
-     "depTime": "22:25",
+     "depDate": "2026-12-09",
+     "depTime": "18:05",
      "retDate": "2026-12-16",
-     "retTime": "19:50",
-     "stops": 0,
-     "retStops": 0,
-     "duration": 355,
-     "link": "https://www.aviasales.com/search/BKK1012ICN16121?t=TW17969415001796970000000355BKKICN17974506001797466200000380ICNBKK_8bee28f1c8c97e02fca01ba76cacb14a_35053&search_date=01112026&expected_price_uuid=01a19589-95cc-8030-a2c4-54e216a4382e&static_fare_key=TY%7CP1%7CH1%7CL0%7CCH0%7CR0%7CTBC0&itinerary_key=yLhsDlP9S4hiPvmWCTOTHA&origin_airports=1&destination_airports=0&expected_price_source=share&expected_price_currency=thb&expected_price=14652"
+     "retTime": "23:55",
+     "stops": 1,
+     "retStops": 1,
+     "duration": 360,
+     "link": "https://www.aviasales.com/search/BKK0912ICN16121?t=VN17968395001796942100001590BKKDADICN17974653001797506100000800ICNDADBKK_c572bfebd4289233643e6177b8562c6c_27371&search_date=25102026&expected_price_uuid=01a174e7-cf81-8030-eb46-c37d556b68a9&static_fare_key=TY%7CP1_JW%7CH1%7CL1_1_23%7CCH0%7CR0%7CTBC1&itinerary_key=qer5Hcbkvbkv5E30SwwbOg&origin_airports=1&destination_airports=0&expected_price_source=share&expected_price_currency=thb&expected_price=11468"
     }
    ],
    "found": 1,
    "lowest": {
-    "price": 14651,
-    "at": "2026-11-01T12:29:21.539Z",
+    "price": 11468,
+    "at": "2026-11-01T16:35:19.025Z",
     "deal": {
-     "price": 14651,
-     "airline": "ZE",
-     "airlineName": "Eastar Jet",
-     "flight": "ZE512",
+     "price": 11468,
+     "airline": "VN",
+     "airlineName": "Vietnam Airlines",
+     "flight": "VN626",
      "from": "BKK",
      "to": "ICN",
-     "depDate": "2026-12-10",
-     "depTime": "22:25",
+     "depDate": "2026-12-09",
+     "depTime": "18:05",
      "retDate": "2026-12-16",
-     "retTime": "19:50",
-     "stops": 0,
-     "retStops": 0,
-     "duration": 355,
-     "link": "https://www.aviasales.com/search/BKK1012ICN16121?t=TW17969415001796970000000355BKKICN17974506001797466200000380ICNBKK_8bee28f1c8c97e02fca01ba76cacb14a_35053&search_date=01112026&expected_price_uuid=01a19589-95cc-8030-a2c4-54e216a4382e&static_fare_key=TY%7CP1%7CH1%7CL0%7CCH0%7CR0%7CTBC0&itinerary_key=yLhsDlP9S4hiPvmWCTOTHA&origin_airports=1&destination_airports=0&expected_price_source=share&expected_price_currency=thb&expected_price=14651"
+     "retTime": "23:55",
+     "stops": 1,
+     "retStops": 1,
+     "duration": 360,
+     "link": "https://www.aviasales.com/search/BKK0912ICN16121?t=VN17968395001796942100001590BKKDADICN17974653001797506100000800ICNDADBKK_c572bfebd4289233643e6177b8562c6c_27371&search_date=25102026&expected_price_uuid=01a174e7-cf81-8030-eb46-c37d556b68a9&static_fare_key=TY%7CP1_JW%7CH1%7CL1_1_23%7CCH0%7CR0%7CTBC1&itinerary_key=qer5Hcbkvbkv5E30SwwbOg&origin_airports=1&destination_airports=0&expected_price_source=share&expected_price_currency=thb&expected_price=11468"
     }
    },
    "stats": {
     "days": 1,
-    "min": 14652,
-    "p25": 14652,
-    "median": 14652,
-    "p75": 14652,
-    "max": 14652,
-    "suggest": 14600,
+    "min": 11468,
+    "p25": 11468,
+    "median": 11468,
+    "p75": 11468,
+    "max": 11468,
+    "suggest": 11400,
     "byDate": [
      {
-      "d": "2026-12-10",
-      "p": 14652
+      "d": "2026-12-09",
+      "p": 11468
      }
     ]
    },
-   "lastAlertPrice": 14652,
-   "lastAlertAt": "2026-11-01T13:50:32.422Z"
+   "lastAlertPrice": 11468,
+   "lastAlertAt": "2026-11-01T16:35:19.025Z"
   }
  }
 }
