@@ -1,5 +1,9 @@
 {
- "updatedAt": "2026-11-01T13:57:51.026Z",
+ "updatedAt": "2026-11-01T16:35:10.346Z",
+ "prefs": {
+  "digest": true,
+  "digestHour": 7
+ },
  "routes": [
   {
    "id": "r_k7vhe22",
@@ -13,7 +17,8 @@
    "stayMax": 7,
    "timeFrom": "18:00",
    "timeTo": "23:59",
-   "directOnly": true,
+   "directOnly": false,
+   "notifyNew": true,
    "targetPrice": 15000,
    "dropPct": 10,
    "active": true
