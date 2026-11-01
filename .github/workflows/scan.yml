@@ -1,0 +1,52 @@
+name: Scan flight prices
+
+on:
+  schedule:
+    - cron: '17 */4 * * *'
+  push:
+    paths: ['routes.json']
+  workflow_dispatch:
+    inputs:
+      test_alert:
+        description: 'ส่งข้อความทดสอบไป Telegram'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: flight-scan
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Scan prices
+        run: node scripts/scan.mjs
+        env:
+          TP_TOKEN: ${{ secrets.TP_TOKEN }}
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+          TEST_ALERT: ${{ inputs.test_alert }}
+
+      - name: Save results
+        run: |
+          git config user.name "flight-bot"
+          git config user.email "flight-bot@users.noreply.github.com"
+          git add data/prices.json
+          if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+          git commit -m "scan $(date -u +%Y-%m-%dT%H:%MZ)"
+          for i in 1 2 3; do
+            git pull --rebase && git push && exit 0
+            sleep 5
+          done
+          exit 1
