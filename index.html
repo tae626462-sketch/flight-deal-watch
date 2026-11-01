@@ -193,7 +193,8 @@ dialog::backdrop{background:rgba(5,12,22,.55);backdrop-filter:blur(2px)}
 .timechips button{border:1px solid var(--line);background:var(--surface-2);border-radius:999px;padding:6px 12px;font-size:13px}
 .timechips button.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
 .toggle{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}
-.toggle span{flex:1;font-size:14px}
+.fld>label.toggle,.toggle{display:flex;margin-bottom:0}
+.toggle span{flex:1;font-size:14px;line-height:1.45}
 .sw{appearance:none;width:44px;height:26px;border-radius:99px;background:var(--line);position:relative;transition:.2s;flex:none;margin:0}
 .sw::after{content:"";position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
 .sw:checked{background:var(--accent)}.sw:checked::after{left:21px}
@@ -316,6 +317,8 @@ footer{text-align:center;color:var(--ink-3);font-size:12px;margin:24px 0 0}
         <div class="qchips" id="targetChips"></div>
       </div>
 
+      <div class="fld"><label class="toggle"><span>แจ้งทุกครั้งที่เจอตั๋วใหม่ที่ถูกกว่าเดิม<br><small style="color:var(--ink-3)">ถูกลงอย่างน้อย ฿100 จากรอบสแกนก่อน · ไม่ต้องตั้งเป้าก็เตือน</small></span><input type="checkbox" class="sw" id="fNotifyNew"></label></div>
+
       <div class="fld"><label for="fDrop">แจ้งเตือนเมื่อราคาลดลงจากรอบก่อนเกิน</label>
         <select class="inp" id="fDrop">
           <option value="0">ไม่ต้องแจ้ง</option><option value="5">5%</option><option value="10">10%</option><option value="15">15%</option><option value="20">20%</option><option value="30">30%</option>
@@ -344,6 +347,16 @@ footer{text-align:center;color:var(--ink-3);font-size:12px;margin:24px 0 0}
       <div class="hint">เก็บไว้ในเครื่องนี้เท่านั้น · สิทธิ์ที่ต้องให้: เฉพาะ repo นี้ → Contents: Read and write, Actions: Read and write</div>
     </div>
     <div class="statusline" id="sStatus"></div>
+    <div class="fld"><span class="lbl">สรุปราคาเข้า Telegram ทุกวัน</span>
+      <label class="toggle"><span>ส่งสรุปทุกเส้นทาง วันละครั้ง</span><input type="checkbox" class="sw" id="pDigest"></label>
+      <select class="inp" id="pDigestHour" style="margin-top:8px" aria-label="เวลาส่งสรุป">
+        <option value="7">ตอนเช้า (ประมาณ 7 โมง)</option>
+        <option value="11">ตอนสาย (ประมาณ 11 โมง)</option>
+        <option value="15">ตอนบ่าย (ประมาณ บ่าย 3)</option>
+        <option value="19">ตอนเย็น (ประมาณ 1 ทุ่ม)</option>
+      </select>
+      <div class="hint">ส่งพร้อมรอบสแกนแรกหลังเวลาที่เลือก (อาจช้ากว่าเวลาเล็กน้อย)</div>
+    </div>
     <div class="fld"><span class="lbl">ธีม</span>
       <div class="seg" id="segTheme"><button type="button" data-v="">ตามเครื่อง</button><button type="button" data-v="light">สว่าง</button><button type="button" data-v="dark">มืด</button></div>
     </div>
@@ -375,7 +388,8 @@ const PLACES = {
   DXB:'ดูไบ',DOH:'โดฮา',IST:'อิสตันบูล',LON:'ลอนดอน',PAR:'ปารีส',FRA:'แฟรงก์เฟิร์ต',MUC:'มิวนิก',ZRH:'ซูริก',AMS:'อัมสเตอร์ดัม',
   ROM:'โรม',MIL:'มิลาน',HEL:'เฮลซิงกิ',SYD:'ซิดนีย์',MEL:'เมลเบิร์น',PER:'เพิร์ท',AKL:'โอ๊คแลนด์',LAX:'ลอสแอนเจลิส',SFO:'ซานฟรานซิสโก',NYC:'นิวยอร์ก'
 };
-const LS = { routes:'fdw.routes', dirty:'fdw.dirty', settings:'fdw.settings', data:'fdw.data', theme:'fdw.theme' };
+const LS = { routes:'fdw.routes', dirty:'fdw.dirty', settings:'fdw.settings', data:'fdw.data', theme:'fdw.theme', prefs:'fdw.prefs' };
+const PREF_DEFAULT = { digest:true, digestHour:7 };
 const ICON = {
   cal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
   stay:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 20V8l9-5 9 5v12"/><path d="M9 20v-6h6v6"/></svg>',
@@ -390,7 +404,7 @@ const ICON = {
 };
 
 // ---------- สถานะ ----------
-let routes = [], data = { routes:{} }, settings = {}, dirty = false, editingId = null;
+let routes = [], data = { routes:{} }, settings = {}, dirty = false, editingId = null, prefs = { ...PREF_DEFAULT };
 const $ = s => document.querySelector(s);
 const jget = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
 const jset = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
@@ -445,21 +459,22 @@ function guessRepo() {
 async function loadAll(showToast) {
   settings = { branch:'main', ...guessRepo(), ...jget(LS.settings, {}) };
   routes = jget(LS.routes, null);
+  prefs = { ...PREF_DEFAULT, ...jget(LS.prefs, {}) };
   dirty = jget(LS.dirty, false);
   data = jget(LS.data, { routes:{} });
   render();
   try {
     if (connected()) {
       const [r, d] = await Promise.all([ghGetFile('routes.json'), ghGetFile('data/prices.json')]);
-      if (!dirty && r.text) routes = JSON.parse(r.text).routes || [];
+      if (!dirty && r.text) { const j = JSON.parse(r.text); routes = j.routes || []; prefs = { ...PREF_DEFAULT, ...(j.prefs || {}) }; }
       if (d.text) data = JSON.parse(d.text);
     } else {
       const bust = '?t=' + Date.now();
-      if (!routes) { const r = await fetch('routes.json' + bust, { cache:'no-store' }); if (r.ok) routes = (await r.json()).routes || []; }
+      if (!routes) { const r = await fetch('routes.json' + bust, { cache:'no-store' }); if (r.ok) { const j = await r.json(); routes = j.routes || []; prefs = { ...PREF_DEFAULT, ...(j.prefs || {}) }; } }
       const d = await fetch('data/prices.json' + bust, { cache:'no-store' }); if (d.ok) data = await d.json();
     }
     if (!routes) routes = [];
-    jset(LS.routes, routes); jset(LS.data, data);
+    jset(LS.routes, routes); jset(LS.data, data); jset(LS.prefs, prefs);
     if (showToast) toast('อัปเดตข้อมูลแล้ว');
   } catch (e) {
     if (!routes) routes = [];
@@ -467,12 +482,12 @@ async function loadAll(showToast) {
   }
   render();
 }
-function saveLocal() { jset(LS.routes, routes); jset(LS.dirty, dirty); }
+function saveLocal() { jset(LS.routes, routes); jset(LS.dirty, dirty); jset(LS.prefs, prefs); }
 async function syncRoutes() {
   if (!connected()) { openSettings(); toast('ตั้งค่า GitHub ก่อน เพื่อให้ระบบสแกนอัตโนมัติ'); return false; }
   const btn = $('#syncBtn'); if (btn) { btn.disabled = true; btn.textContent = 'กำลังซิงค์…'; }
   try {
-    await ghPutFile('routes.json', JSON.stringify({ updatedAt: new Date().toISOString(), routes }, null, 1) + '\n', 'อัปเดตเส้นทาง (' + routes.length + ')');
+    await ghPutFile('routes.json', JSON.stringify({ updatedAt: new Date().toISOString(), prefs, routes }, null, 1) + '\n', 'อัปเดตเส้นทาง (' + routes.length + ')');
     dirty = false; saveLocal(); render();
     toast('ซิงค์แล้ว — ระบบเริ่มสแกนรอบใหม่ ประมาณ 1–2 นาที', 3500);
     return true;
@@ -590,7 +605,8 @@ function card(r) {
     r.tripType !== 'oneway' ? `<span>${ICON.stay}พัก ${r.stayMin === r.stayMax ? r.stayMin : r.stayMin + '–' + r.stayMax} วัน</span>` : '',
     timeLabel(r) ? `<span>${ICON.clock}${timeLabel(r)}</span>` : '',
     r.directOnly ? `<span>${ICON.direct}บินตรง</span>` : '',
-    target ? `<span>${ICON.bell}เป้า ${baht(target)}${r.dropPct ? ' · ลด ' + r.dropPct + '%' : ''}</span>` : (r.dropPct ? `<span>${ICON.bell}ลด ${r.dropPct}%</span>` : '')
+    (() => { const p = [target ? 'เป้า ' + baht(target) : '', r.dropPct ? 'ลด ' + r.dropPct + '%' : '', r.notifyNew !== false ? 'ถูกลงเมื่อไหร่' : ''].filter(Boolean);
+      return p.length ? `<span>${ICON.bell}${p.join(' · ')}</span>` : `<span style="color:var(--warn)">${ICON.bell}ปิดแจ้งเตือน</span>`; })()
   ].join('');
 
   let priceBlock;
@@ -677,7 +693,7 @@ function openRoute(id) {
   $('#fName').value = r.name || ''; $('#fOrigin').value = r.origin || ''; $('#fDest').value = r.destination || '';
   $('#fFrom').value = r.departFrom; $('#fTo').value = r.departTo; $('#fFrom').min = $('#fTo').min = todayStr();
   $('#fStayMin').value = r.stayMin ?? 3; $('#fStayMax').value = r.stayMax ?? 7;
-  $('#fDirect').checked = !!r.directOnly; $('#fTarget').value = r.targetPrice || ''; $('#fDrop').value = String(r.dropPct ?? 0);
+  $('#fDirect').checked = !!r.directOnly; $('#fNotifyNew').checked = r.notifyNew !== false; $('#fTarget').value = r.targetPrice || ''; $('#fDrop').value = String(r.dropPct ?? 0);
   setTrip(r.tripType || 'roundtrip'); setTime(r.timeFrom || '', r.timeTo || '');
   const st = id && data.routes?.[id]?.stats;
   if (st) {
@@ -708,6 +724,7 @@ function readForm() {
     stayMin: parseInt($('#fStayMin').value, 10) || 1, stayMax: parseInt($('#fStayMax').value, 10) || 1,
     timeFrom: timeSel.f === 'custom' ? '' : timeSel.f, timeTo: timeSel.f === 'custom' ? '' : timeSel.t,
     directOnly: $('#fDirect').checked,
+    notifyNew: $('#fNotifyNew').checked,
     targetPrice: Math.max(0, parseInt($('#fTarget').value, 10) || 0),
     dropPct: parseInt($('#fDrop').value, 10) || 0,
     active: editingId ? (routes.find(x => x.id === editingId)?.active !== false) : true
@@ -730,6 +747,7 @@ function readForm() {
 function openSettings() {
   $('#sOwner').value = settings.owner || ''; $('#sRepo').value = settings.repo || ''; $('#sBranch').value = settings.branch || 'main'; $('#sToken').value = settings.token || '';
   $('#sStatus').className = 'statusline'; markTheme();
+  $('#pDigest').checked = prefs.digest !== false; $('#pDigestHour').value = String(prefs.digestHour ?? 7);
   $('#dlgSettings').showModal();
 }
 function readSettings() { return { owner: $('#sOwner').value.trim(), repo: $('#sRepo').value.trim(), branch: $('#sBranch').value.trim() || 'main', token: $('#sToken').value.replace(/\s/g, '') }; }
@@ -795,11 +813,14 @@ $('#targetChips').addEventListener('click', e => {
 $('#btnSaveSettings').onclick = async () => {
   const s = readSettings();
   const changedRepo = s.owner !== settings.owner || s.repo !== settings.repo || s.branch !== settings.branch;
+  const np = { digest: $('#pDigest').checked, digestHour: Number($('#pDigestHour').value) };
+  if (np.digest !== prefs.digest || np.digestHour !== prefs.digestHour) { prefs = { ...prefs, ...np }; dirty = true; saveLocal(); }
   settings = s; jset(LS.settings, s);
   $('#dlgSettings').close();
   toast('บันทึกการตั้งค่าแล้ว');
   if (changedRepo && !dirty) { jset(LS.routes, null); }
   await loadAll();
+  if (dirty && connected()) await syncRoutes();
 };
 $('#btnTest').onclick = async () => {
   const prev = settings; settings = readSettings();
@@ -823,7 +844,7 @@ $('#btnTest').onclick = async () => {
 };
 document.querySelectorAll('#segTheme button').forEach(b => b.onclick = () => { jset(LS.theme, b.dataset.v); applyTheme(b.dataset.v); markTheme(); });
 $('#btnExport').onclick = () => {
-  const blob = new Blob([JSON.stringify({ updatedAt: new Date().toISOString(), routes }, null, 1)], { type:'application/json' });
+  const blob = new Blob([JSON.stringify({ updatedAt: new Date().toISOString(), prefs, routes }, null, 1)], { type:'application/json' });
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'routes.json'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 };
 $('#btnImport').onclick = () => $('#fileImport').click();
