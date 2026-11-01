@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-11-01T13:56:48.151Z",
+ "updatedAt": "2026-11-01T13:57:51.026Z",
  "routes": [
   {
    "id": "r_k7vhe22",
@@ -15,21 +15,6 @@
    "timeTo": "23:59",
    "directOnly": true,
    "targetPrice": 15000,
-   "dropPct": 10,
-   "active": true
-  },
-  {
-   "id": "r_bxsar4y",
-   "name": "Korea",
-   "origin": "BKK",
-   "destination": "ICN",
-   "tripType": "oneway",
-   "departFrom": "2026-12-09",
-   "departTo": "2026-12-16",
-   "timeFrom": "",
-   "timeTo": "",
-   "directOnly": true,
-   "targetPrice": 6800,
    "dropPct": 10,
    "active": true
   }
