@@ -1,0 +1,747 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>จับตั๋วถูก</title>
+<meta name="description" content="สแกนราคาตั๋วเครื่องบินถูกสุดหลายเส้นทาง พร้อมแจ้งเตือนเมื่อถึงราคาเป้า">
+<meta name="theme-color" content="#0b1d33">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#eef2f6; --surface:#ffffff; --surface-2:#f5f7fa; --ink:#0b1d33; --ink-2:#4a5b70; --ink-3:#8494a7;
+  --line:#dde4ec; --accent:#0a6cff; --accent-ink:#ffffff; --accent-soft:#e3eeff;
+  --good:#0f8a5f; --good-soft:#dff5ea; --warn:#b26a00; --warn-soft:#fff1d6; --bad:#c4352b; --bad-soft:#fde5e2;
+  --ticket:#0b1d33; --ticket-ink:#ffffff; --shadow:0 1px 2px rgba(11,29,51,.06),0 6px 20px rgba(11,29,51,.06);
+  --r:16px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#08111d; --surface:#101c2b; --surface-2:#152335; --ink:#e8eef6; --ink-2:#a9b7c8; --ink-3:#6f8197;
+    --line:#22334a; --accent:#4d94ff; --accent-ink:#04101f; --accent-soft:#132a4a;
+    --good:#3ccf91; --good-soft:#0f2e23; --warn:#f0a83a; --warn-soft:#33240c; --bad:#ff7a6e; --bad-soft:#3a1714;
+    --ticket:#16304f; --ticket-ink:#ffffff; --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#08111d; --surface:#101c2b; --surface-2:#152335; --ink:#e8eef6; --ink-2:#a9b7c8; --ink-3:#6f8197;
+  --line:#22334a; --accent:#4d94ff; --accent-ink:#04101f; --accent-soft:#132a4a;
+  --good:#3ccf91; --good-soft:#0f2e23; --warn:#f0a83a; --warn-soft:#33240c; --bad:#ff7a6e; --bad-soft:#3a1714;
+  --ticket:#16304f; --ticket-ink:#ffffff; --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans Thai",system-ui,sans-serif;-webkit-font-smoothing:antialiased;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px}
+
+/* header */
+header{background:var(--ticket);color:var(--ticket-ink);padding:calc(14px + env(safe-area-inset-top)) 0 22px;position:relative;overflow:hidden}
+header::after{content:"";position:absolute;inset:auto -40px -60px auto;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(77,148,255,.35),transparent 70%)}
+.hrow{display:flex;align-items:center;gap:12px;position:relative;z-index:1}
+.logo{width:40px;height:40px;border-radius:12px;background:#ffb020;display:grid;place-items:center;flex:none}
+.logo svg{width:24px;height:24px}
+.htitle{flex:1;min-width:0}
+.htitle h1{margin:0;font-size:20px;font-weight:700;letter-spacing:.2px}
+.htitle p{margin:0;font-size:12.5px;opacity:.75}
+.iconbtn{width:40px;height:40px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);color:inherit;display:grid;place-items:center;flex:none}
+.iconbtn svg{width:20px;height:20px}
+.stats{display:flex;gap:10px;margin-top:16px;position:relative;z-index:1}
+.stat{flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:8px 12px}
+.stat b{display:block;font-size:18px}
+.stat span{font-size:11.5px;opacity:.75}
+
+/* banner */
+.banner{margin:16px 0 0;padding:12px 14px;border-radius:12px;background:var(--warn-soft);color:var(--warn);font-size:13.5px;display:flex;gap:10px;align-items:flex-start}
+.banner b{color:var(--ink)}
+.banner button{margin-left:auto;flex:none;border:0;background:var(--warn);color:#fff;border-radius:8px;padding:4px 10px;font-size:13px}
+.syncbar{margin:12px 0 0;padding:10px 14px;border-radius:12px;background:var(--accent-soft);font-size:13.5px;display:flex;align-items:center;gap:10px}
+.syncbar button{margin-left:auto;border:0;background:var(--accent);color:var(--accent-ink);border-radius:8px;padding:6px 12px;font-weight:600}
+
+/* toolbar */
+.toolbar{display:flex;align-items:center;gap:8px;margin:20px 0 10px}
+.toolbar h2{margin:0;font-size:16px;flex:1}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;font-size:13px;display:inline-flex;align-items:center;gap:6px}
+.chip svg{width:15px;height:15px}
+
+/* route card (boarding pass) */
+.card{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden;border:1px solid var(--line)}
+.card.paused{opacity:.62}
+.c-top{padding:14px 16px 12px}
+.c-name{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-2);margin-bottom:6px}
+.c-name .t{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.badge{font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.b-hit{background:var(--good-soft);color:var(--good)}
+.b-watch{background:var(--accent-soft);color:var(--accent)}
+.b-pause{background:var(--surface-2);color:var(--ink-3)}
+.b-err{background:var(--bad-soft);color:var(--bad)}
+.b-empty{background:var(--warn-soft);color:var(--warn)}
+.route{display:flex;align-items:center;gap:10px}
+.code{font-family:"IBM Plex Mono",monospace;font-size:30px;font-weight:600;letter-spacing:1px;line-height:1}
+.city{font-size:12px;color:var(--ink-3);margin-top:3px;max-width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.path{flex:1;position:relative;height:24px;display:flex;align-items:center}
+.path::before{content:"";position:absolute;left:0;right:0;top:50%;border-top:2px dashed var(--line)}
+.path svg{position:relative;margin:0 auto;width:22px;height:22px;color:var(--accent);background:var(--surface);padding:0 2px}
+.path .kind{position:absolute;left:50%;top:22px;transform:translateX(-50%);font-size:11px;color:var(--ink-3);white-space:nowrap}
+.r-end{text-align:right}
+.r-end .city{margin-left:auto}
+.meta{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:16px;font-size:12.5px;color:var(--ink-2)}
+.meta span{display:inline-flex;align-items:center;gap:5px}
+.meta svg{width:14px;height:14px;color:var(--ink-3)}
+
+.perf{position:relative;height:18px;margin:0 -1px}
+.perf::before,.perf::after{content:"";position:absolute;top:0;width:18px;height:18px;border-radius:50%;background:var(--bg);border:1px solid var(--line)}
+.perf::before{left:-10px}.perf::after{right:-10px}
+.perf i{position:absolute;left:16px;right:16px;top:50%;border-top:2px dotted var(--line)}
+
+.c-price{padding:4px 16px 14px;display:flex;align-items:flex-end;gap:14px}
+.now small{display:block;font-size:12px;color:var(--ink-3)}
+.now .p{font-family:"IBM Plex Mono",monospace;font-size:28px;font-weight:600;line-height:1.15}
+.now .p.hit{color:var(--good)}
+.now .d{font-size:12.5px;color:var(--ink-2)}
+.trend{font-size:12px;font-weight:600;margin-left:6px}
+.trend.down{color:var(--good)}.trend.up{color:var(--bad)}
+.spark{flex:1;min-width:80px;height:46px}
+.spark svg{width:100%;height:100%;display:block}
+.sub{display:flex;gap:14px;padding:0 16px 12px;font-size:12px;color:var(--ink-3);flex-wrap:wrap}
+.sub b{color:var(--ink-2);font-weight:600}
+.actions{display:flex;border-top:1px solid var(--line)}
+.actions button{flex:1;border:0;background:none;padding:11px 6px;font-size:13px;color:var(--ink-2);display:flex;align-items:center;justify-content:center;gap:6px}
+.actions button+button{border-left:1px solid var(--line)}
+.actions button svg{width:16px;height:16px}
+.actions button.primary{color:var(--accent);font-weight:600}
+
+.deals{border-top:1px solid var(--line);background:var(--surface-2);padding:6px 12px 10px;display:none}
+.deals.open{display:block}
+.deal{display:flex;align-items:center;gap:10px;padding:9px 4px;border-bottom:1px solid var(--line)}
+.deal:last-child{border-bottom:0}
+.deal .rank{width:22px;height:22px;border-radius:7px;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;font-size:11.5px;font-weight:600;color:var(--ink-2);flex:none}
+.deal .info{flex:1;min-width:0;font-size:12.5px}
+.deal .info b{font-size:13.5px;color:var(--ink)}
+.deal .info div{color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.deal .pr{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:15px;text-align:right}
+.deal .lk{display:flex;gap:6px;margin-top:3px;justify-content:flex-end}
+.deal a{font-size:11.5px;color:var(--accent);text-decoration:none;border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:1px 7px}
+
+.empty{text-align:center;padding:40px 20px;color:var(--ink-2)}
+.empty svg{width:72px;height:72px;color:var(--ink-3);margin-bottom:10px}
+.empty h3{margin:0 0 4px;color:var(--ink);font-size:17px}
+
+.fab{position:fixed;right:max(16px,calc(50% - 344px));bottom:calc(20px + env(safe-area-inset-bottom));border:0;background:var(--accent);color:var(--accent-ink);border-radius:16px;padding:14px 20px;font-weight:600;font-size:15px;display:flex;align-items:center;gap:8px;box-shadow:0 8px 24px rgba(10,108,255,.35);z-index:5}
+.fab svg{width:20px;height:20px}
+
+/* dialogs */
+dialog{border:0;padding:0;border-radius:20px;background:var(--surface);color:var(--ink);width:min(560px,calc(100% - 24px));max-height:calc(100dvh - 32px);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(5,12,22,.55);backdrop-filter:blur(2px)}
+@media (max-width:600px){dialog{width:100%;max-width:100%;margin:auto 0 0;border-radius:20px 20px 0 0;max-height:92dvh}}
+.dh{display:flex;align-items:center;padding:16px 18px 6px;position:sticky;top:0;background:var(--surface);z-index:2}
+.dh h3{margin:0;font-size:18px;flex:1}
+.dh button{border:0;background:var(--surface-2);width:34px;height:34px;border-radius:10px;display:grid;place-items:center}
+.dh button svg{width:18px;height:18px}
+.db{padding:6px 18px 18px}
+.df{display:flex;gap:10px;padding:12px 18px calc(16px + env(safe-area-inset-bottom));border-top:1px solid var(--line);position:sticky;bottom:0;background:var(--surface)}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:11px 16px;font-weight:600}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);flex:1}
+.btn.danger{color:var(--bad)}
+.fld{margin-top:14px}
+.fld>label,.lbl{display:block;font-size:13px;font-weight:600;color:var(--ink-2);margin-bottom:6px}
+.hint{font-size:12px;color:var(--ink-3);margin-top:5px}
+.inp{width:100%;border:1px solid var(--line);background:var(--surface-2);border-radius:12px;padding:11px 12px;outline:none;min-height:46px}
+.inp:focus{border-color:var(--accent);background:var(--surface)}
+.inp.code-in{font-family:"IBM Plex Mono",monospace;font-size:20px;font-weight:600;text-transform:uppercase;letter-spacing:1px;text-align:center}
+.row{display:flex;gap:10px;align-items:flex-end}
+.row>*{flex:1;min-width:0}
+.swap{flex:none;width:44px;height:46px;border-radius:12px;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center}
+.swap svg{width:18px;height:18px}
+.seg{display:flex;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:3px}
+.seg button{flex:1;border:0;background:none;border-radius:9px;padding:8px;font-weight:500;color:var(--ink-2)}
+.seg button.on{background:var(--surface);color:var(--ink);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.timechips{display:flex;flex-wrap:wrap;gap:6px}
+.timechips button{border:1px solid var(--line);background:var(--surface-2);border-radius:999px;padding:6px 12px;font-size:13px}
+.timechips button.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
+.toggle{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}
+.toggle span{flex:1;font-size:14px}
+.sw{appearance:none;width:44px;height:26px;border-radius:99px;background:var(--line);position:relative;transition:.2s;flex:none;margin:0}
+.sw::after{content:"";position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.sw:checked{background:var(--accent)}.sw:checked::after{left:21px}
+.prefix{position:relative}.prefix i{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-style:normal;color:var(--ink-3);font-weight:600}
+.prefix .inp{padding-left:28px}
+.err{color:var(--bad);font-size:13px;margin-top:12px;min-height:1em}
+.steps{font-size:13px;color:var(--ink-2);padding-left:18px;margin:8px 0 0}
+.steps li{margin-bottom:4px}
+code{font-family:"IBM Plex Mono",monospace;font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:5px;padding:0 4px}
+.statusline{font-size:13px;margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--surface-2);display:none}
+.statusline.show{display:block}
+
+.toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:50;max-width:calc(100% - 32px);text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.spin{animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+footer{text-align:center;color:var(--ink-3);font-size:12px;margin:24px 0 0}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="hrow">
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="#0b1d33"><path d="M21 15.5v-1.7l-8-5V3.6a1.6 1.6 0 0 0-3.2 0v5.2l-8 5v1.7l8-2.4v5.2l-2.2 1.6V21l3.8-1.1 3.8 1.1v-1.3L13 18.1v-5.2z"/></svg>
+      </div>
+      <div class="htitle">
+        <h1>จับตั๋วถูก</h1>
+        <p id="updatedLine">กำลังโหลด…</p>
+      </div>
+      <button class="iconbtn" id="btnRefresh" aria-label="โหลดข้อมูลใหม่" title="โหลดข้อมูลใหม่">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>
+      </button>
+      <button class="iconbtn" id="btnSettings" aria-label="ตั้งค่า" title="ตั้งค่า">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+      </button>
+    </div>
+    <div class="stats">
+      <div class="stat"><b id="stRoutes">0</b><span>เส้นทางที่จับตา</span></div>
+      <div class="stat"><b id="stHits">0</b><span>ถึงราคาเป้า</span></div>
+      <div class="stat"><b id="stBest" class="mono">–</b><span>ถูกสุดตอนนี้</span></div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div id="banner"></div>
+  <div class="toolbar">
+    <h2>เส้นทางของฉัน</h2>
+    <button class="chip" id="btnScan" title="สั่งสแกนรอบใหม่ทันที">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      สแกนตอนนี้
+    </button>
+  </div>
+  <div id="list"></div>
+  <footer>ราคาจาก Aviasales Data API (แคชการค้นหาล่าสุด) · ควรเช็คราคาจริงก่อนจอง<br>By Thitipong Srisomwong</footer>
+</main>
+
+<button class="fab" id="btnAdd">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+  เพิ่มเส้นทาง
+</button>
+
+<!-- ฟอร์มเส้นทาง -->
+<dialog id="dlgRoute">
+  <form method="dialog" id="routeForm" novalidate>
+    <div class="dh"><h3 id="routeTitle">เพิ่มเส้นทาง</h3><button type="button" data-close aria-label="ปิด"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+    <div class="db">
+      <div class="fld"><label for="fName">ชื่อทริป (ไม่บังคับ)</label><input class="inp" id="fName" placeholder="เช่น เที่ยวญี่ปุ่นปีใหม่" maxlength="40"></div>
+
+      <div class="fld">
+        <div class="row">
+          <div><label class="lbl" for="fOrigin">ต้นทาง</label><input class="inp code-in" id="fOrigin" list="airports" maxlength="3" placeholder="BKK" autocomplete="off"></div>
+          <button type="button" class="swap" id="btnSwap" aria-label="สลับต้นทางปลายทาง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 4 3 8l4 4M3 8h14M17 20l4-4-4-4M21 16H7"/></svg></button>
+          <div><label class="lbl" for="fDest">ปลายทาง</label><input class="inp code-in" id="fDest" list="airports" maxlength="3" placeholder="TYO" autocomplete="off"></div>
+        </div>
+        <div class="hint" id="codeHint">พิมพ์รหัสสนามบิน/เมือง 3 ตัว หรือเลือกจากรายการ (เช่น TYO = ทุกสนามบินในโตเกียว)</div>
+      </div>
+
+      <div class="fld"><span class="lbl">ประเภทตั๋ว</span>
+        <div class="seg" id="segTrip"><button type="button" data-v="roundtrip">ไป-กลับ</button><button type="button" data-v="oneway">เที่ยวเดียว</button></div>
+      </div>
+
+      <div class="fld"><span class="lbl">ช่วงวันออกเดินทาง</span>
+        <div class="row">
+          <div><input class="inp" type="date" id="fFrom" aria-label="ตั้งแต่วันที่"></div>
+          <div><input class="inp" type="date" id="fTo" aria-label="ถึงวันที่"></div>
+        </div>
+        <div class="hint">ระบบจะหาวันที่ถูกที่สุดในช่วงนี้ให้</div>
+      </div>
+
+      <div class="fld" id="stayBox"><span class="lbl">จำนวนวันที่อยู่ปลายทาง</span>
+        <div class="row">
+          <div><input class="inp" type="number" id="fStayMin" min="1" max="60" inputmode="numeric" aria-label="อย่างน้อย (วัน)"></div>
+          <div style="flex:none;padding-bottom:12px;color:var(--ink-3)">ถึง</div>
+          <div><input class="inp" type="number" id="fStayMax" min="1" max="60" inputmode="numeric" aria-label="ไม่เกิน (วัน)"></div>
+          <div style="flex:none;padding-bottom:12px;color:var(--ink-3)">วัน</div>
+        </div>
+      </div>
+
+      <div class="fld"><span class="lbl">ช่วงเวลาที่อยากออกเดินทาง</span>
+        <div class="timechips" id="timeChips">
+          <button type="button" data-f="" data-t="">ทั้งวัน</button>
+          <button type="button" data-f="05:00" data-t="11:59">เช้า 05–12</button>
+          <button type="button" data-f="12:00" data-t="17:59">บ่าย 12–18</button>
+          <button type="button" data-f="18:00" data-t="23:59">เย็น-ค่ำ 18–24</button>
+          <button type="button" data-f="custom">กำหนดเอง</button>
+        </div>
+        <div class="row" id="customTime" style="margin-top:8px;display:none">
+          <div><input class="inp" type="time" id="fTimeFrom" aria-label="ตั้งแต่เวลา"></div>
+          <div><input class="inp" type="time" id="fTimeTo" aria-label="ถึงเวลา"></div>
+        </div>
+      </div>
+
+      <div class="fld"><label class="toggle"><span>บินตรงเท่านั้น</span><input type="checkbox" class="sw" id="fDirect"></label></div>
+
+      <div class="fld"><label for="fTarget">แจ้งเตือนเมื่อราคาไม่เกิน</label>
+        <div class="prefix"><i>฿</i><input class="inp" type="number" id="fTarget" min="0" step="100" inputmode="numeric" placeholder="เช่น 9000"></div>
+        <div class="hint">ราคารวมต่อ 1 คน (ไป-กลับรวมขากลับแล้ว) · เว้นว่าง = ไม่ใช้ราคาเป้า</div>
+      </div>
+
+      <div class="fld"><label for="fDrop">แจ้งเตือนเมื่อราคาลดลงจากรอบก่อนเกิน</label>
+        <select class="inp" id="fDrop">
+          <option value="0">ไม่ต้องแจ้ง</option><option value="5">5%</option><option value="10">10%</option><option value="15">15%</option><option value="20">20%</option><option value="30">30%</option>
+        </select>
+      </div>
+      <div class="err" id="formErr"></div>
+    </div>
+    <div class="df">
+      <button type="button" class="btn danger" id="btnDelete" style="display:none">ลบ</button>
+      <button type="submit" class="btn pri" id="btnSave">บันทึกเส้นทาง</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- ตั้งค่า -->
+<dialog id="dlgSettings">
+  <div class="dh"><h3>ตั้งค่าการเชื่อมต่อ</h3><button type="button" data-close aria-label="ปิด"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <div class="db">
+    <p style="margin:4px 0 0;font-size:13.5px;color:var(--ink-2)">แอพเก็บเส้นทางไว้ใน GitHub repo ของคุณ ระบบสแกนอัตโนมัติ (GitHub Actions) จะอ่านจากที่นั่น และแจ้งเตือนผ่าน Telegram</p>
+    <div class="fld row">
+      <div><label class="lbl" for="sOwner">GitHub user</label><input class="inp" id="sOwner" placeholder="username" autocomplete="off"></div>
+      <div><label class="lbl" for="sRepo">Repo</label><input class="inp" id="sRepo" placeholder="flight-deal-watch" autocomplete="off"></div>
+    </div>
+    <div class="fld"><label for="sBranch">Branch</label><input class="inp" id="sBranch" placeholder="main" autocomplete="off"></div>
+    <div class="fld"><label for="sToken">GitHub token (Fine-grained)</label><input class="inp" id="sToken" type="password" placeholder="github_pat_…" autocomplete="off">
+      <div class="hint">เก็บไว้ในเครื่องนี้เท่านั้น · สิทธิ์ที่ต้องให้: เฉพาะ repo นี้ → Contents: Read and write, Actions: Read and write</div>
+    </div>
+    <div class="statusline" id="sStatus"></div>
+    <div class="fld"><span class="lbl">ธีม</span>
+      <div class="seg" id="segTheme"><button type="button" data-v="">ตามเครื่อง</button><button type="button" data-v="light">สว่าง</button><button type="button" data-v="dark">มืด</button></div>
+    </div>
+    <div class="fld"><span class="lbl">สำรองข้อมูล</span>
+      <div class="row"><button type="button" class="btn" id="btnExport">ดาวน์โหลด routes.json</button><button type="button" class="btn" id="btnImport">นำเข้าไฟล์</button></div>
+      <input type="file" id="fileImport" accept="application/json,.json" hidden>
+    </div>
+  </div>
+  <div class="df"><button type="button" class="btn" id="btnTest">ทดสอบ</button><button type="button" class="btn pri" id="btnSaveSettings">บันทึก</button></div>
+</dialog>
+
+<datalist id="airports"></datalist>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+'use strict';
+// ---------- ข้อมูลอ้างอิง ----------
+const PLACES = {
+  BKK:'กรุงเทพฯ (สุวรรณภูมิ/ดอนเมือง)',DMK:'ดอนเมือง',CNX:'เชียงใหม่',CEI:'เชียงราย',HKT:'ภูเก็ต',KBV:'กระบี่',USM:'เกาะสมุย',
+  HDY:'หาดใหญ่',URT:'สุราษฎร์ธานี',UTH:'อุดรธานี',KKC:'ขอนแก่น',UBP:'อุบลราชธานี',NST:'นครศรีธรรมราช',TST:'ตรัง',
+  NAW:'นราธิวาส',PHS:'พิษณุโลก',NNT:'น่าน',LPT:'ลำปาง',ROI:'ร้อยเอ็ด',SNO:'สกลนคร',KOP:'นครพนม',BFV:'บุรีรัมย์',
+  UTP:'อู่ตะเภา (พัทยา)',TDX:'ตราด',CJM:'ชุมพร',HHQ:'หัวหิน',MAQ:'แม่สอด',LOE:'เลย',
+  TYO:'โตเกียว',OSA:'โอซาก้า',NGO:'นาโกย่า',FUK:'ฟุกุโอกะ',SPK:'ซัปโปโร',OKA:'โอกินาวา',SDJ:'เซนได',
+  SEL:'โซล',PUS:'ปูซาน',CJU:'เชจู',TPE:'ไทเป',KHH:'เกาสง',HKG:'ฮ่องกง',MFM:'มาเก๊า',
+  SIN:'สิงคโปร์',KUL:'กัวลาลัมเปอร์',PEN:'ปีนัง',BKI:'โกตาคินาบาลู',SGN:'โฮจิมินห์',HAN:'ฮานอย',DAD:'ดานัง',
+  PQC:'ฟูก๊วก',CXR:'ญาจาง',SAI:'เสียมเรียบ',PNH:'พนมเปญ',VTE:'เวียงจันทน์',LPQ:'หลวงพระบาง',RGN:'ย่างกุ้ง',
+  DPS:'บาหลี',JKT:'จาการ์ตา',MNL:'มะนิลา',CEB:'เซบู',BJS:'ปักกิ่ง',SHA:'เซี่ยงไฮ้',CAN:'กวางโจว',SZX:'เซินเจิ้น',
+  CTU:'เฉิงตู',KMG:'คุนหมิง',CKG:'ฉงชิ่ง',XMN:'เซียะเหมิน',DEL:'เดลี',BOM:'มุมไบ',KTM:'กาฐมาณฑุ',CMB:'โคลัมโบ',MLE:'มัลดีฟส์',
+  DXB:'ดูไบ',DOH:'โดฮา',IST:'อิสตันบูล',LON:'ลอนดอน',PAR:'ปารีส',FRA:'แฟรงก์เฟิร์ต',MUC:'มิวนิก',ZRH:'ซูริก',AMS:'อัมสเตอร์ดัม',
+  ROM:'โรม',MIL:'มิลาน',HEL:'เฮลซิงกิ',SYD:'ซิดนีย์',MEL:'เมลเบิร์น',PER:'เพิร์ท',AKL:'โอ๊คแลนด์',LAX:'ลอสแอนเจลิส',SFO:'ซานฟรานซิสโก',NYC:'นิวยอร์ก'
+};
+const LS = { routes:'fdw.routes', dirty:'fdw.dirty', settings:'fdw.settings', data:'fdw.data', theme:'fdw.theme' };
+const ICON = {
+  cal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
+  stay:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 20V8l9-5 9 5v12"/><path d="M9 20v-6h6v6"/></svg>',
+  clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  bell:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>',
+  direct:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12h16M14 6l6 6-6 6"/></svg>',
+  plane:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 15.5v-1.7l-8-5V3.6a1.6 1.6 0 0 0-3.2 0v5.2l-8 5v1.7l8-2.4v5.2l-2.2 1.6V21l3.8-1.1 3.8 1.1v-1.3L13 18.1v-5.2z" transform="rotate(90 12 12)"/></svg>',
+  edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>',
+  pause:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 5v14M15 5v14"/></svg>',
+  play:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5v14l12-7z"/></svg>',
+  list:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>'
+};
+
+// ---------- สถานะ ----------
+let routes = [], data = { routes:{} }, settings = {}, dirty = false, editingId = null;
+const $ = s => document.querySelector(s);
+const jget = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
+const jset = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
+const baht = n => '฿' + Math.round(n).toLocaleString('en-US');
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const todayStr = () => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0,10); };
+const addDays = (ymd, n) => { const d = new Date(ymd + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0,10); };
+const dayDiff = (a, b) => Math.round((Date.parse(b + 'T00:00:00Z') - Date.parse(a + 'T00:00:00Z')) / 864e5);
+const thD = (ymd, wd) => new Date(ymd + 'T00:00:00Z').toLocaleDateString('th-TH', { ...(wd ? { weekday:'short' } : {}), day:'numeric', month:'short', timeZone:'UTC' });
+const thDY = ymd => new Date(ymd + 'T00:00:00Z').toLocaleDateString('th-TH', { day:'numeric', month:'short', year:'2-digit', timeZone:'UTC' });
+function ago(iso) {
+  if (!iso) return 'ยังไม่เคยสแกน';
+  const m = Math.round((Date.now() - Date.parse(iso)) / 60000);
+  if (m < 1) return 'เมื่อสักครู่'; if (m < 60) return m + ' นาทีที่แล้ว';
+  const h = Math.round(m / 60); if (h < 24) return h + ' ชม.ที่แล้ว';
+  return Math.round(h / 24) + ' วันที่แล้ว';
+}
+function toast(msg, ms = 2600) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), ms); }
+const uid = () => 'r_' + Math.random().toString(36).slice(2, 9);
+const connected = () => !!(settings.owner && settings.repo && settings.token);
+
+// ---------- GitHub API ----------
+function b64enc(str) { const b = new TextEncoder().encode(str); let s = ''; for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode(...b.subarray(i, i + 0x8000)); return btoa(s); }
+function b64dec(b64) { const bin = atob(b64.replace(/\s/g, '')); return new TextDecoder().decode(Uint8Array.from(bin, c => c.charCodeAt(0))); }
+async function gh(path, opts = {}) {
+  const res = await fetch('https://api.github.com/repos/' + settings.owner + '/' + settings.repo + path, {
+    ...opts, cache:'no-store',
+    headers: { Accept:'application/vnd.github+json', Authorization:'Bearer ' + settings.token, 'X-GitHub-Api-Version':'2022-11-28', ...(opts.headers || {}) }
+  });
+  if (!res.ok) {
+    let msg = res.status + ''; try { msg += ' ' + (await res.json()).message; } catch {}
+    const err = new Error(msg); err.status = res.status; throw err;
+  }
+  return res.status === 204 ? null : res.json();
+}
+async function ghGetFile(p) {
+  try { const j = await gh('/contents/' + p + '?ref=' + encodeURIComponent(settings.branch || 'main')); return { text: b64dec(j.content), sha: j.sha }; }
+  catch (e) { if (e.status === 404) return { text: null, sha: null }; throw e; }
+}
+async function ghPutFile(p, text, message) {
+  const cur = await ghGetFile(p);
+  return gh('/contents/' + p, { method:'PUT', body: JSON.stringify({ message, content: b64enc(text), branch: settings.branch || 'main', ...(cur.sha ? { sha: cur.sha } : {}) }) });
+}
+
+// ---------- โหลด / บันทึก ----------
+function guessRepo() {
+  const m = location.hostname.match(/^([^.]+)\.github\.io$/i);
+  if (!m) return {};
+  const repo = location.pathname.split('/').filter(Boolean)[0];
+  return { owner: m[1], repo: repo && !repo.includes('.') ? repo : m[1] + '.github.io' };
+}
+async function loadAll(showToast) {
+  settings = { branch:'main', ...guessRepo(), ...jget(LS.settings, {}) };
+  routes = jget(LS.routes, null);
+  dirty = jget(LS.dirty, false);
+  data = jget(LS.data, { routes:{} });
+  render();
+  try {
+    if (connected()) {
+      const [r, d] = await Promise.all([ghGetFile('routes.json'), ghGetFile('data/prices.json')]);
+      if (!dirty && r.text) routes = JSON.parse(r.text).routes || [];
+      if (d.text) data = JSON.parse(d.text);
+    } else {
+      const bust = '?t=' + Date.now();
+      if (!routes) { const r = await fetch('routes.json' + bust, { cache:'no-store' }); if (r.ok) routes = (await r.json()).routes || []; }
+      const d = await fetch('data/prices.json' + bust, { cache:'no-store' }); if (d.ok) data = await d.json();
+    }
+    if (!routes) routes = [];
+    jset(LS.routes, routes); jset(LS.data, data);
+    if (showToast) toast('อัปเดตข้อมูลแล้ว');
+  } catch (e) {
+    if (!routes) routes = [];
+    toast('โหลดข้อมูลไม่สำเร็จ: ' + e.message, 4000);
+  }
+  render();
+}
+function saveLocal() { jset(LS.routes, routes); jset(LS.dirty, dirty); }
+async function syncRoutes() {
+  if (!connected()) { openSettings(); toast('ตั้งค่า GitHub ก่อน เพื่อให้ระบบสแกนอัตโนมัติ'); return false; }
+  const btn = $('#syncBtn'); if (btn) { btn.disabled = true; btn.textContent = 'กำลังซิงค์…'; }
+  try {
+    await ghPutFile('routes.json', JSON.stringify({ updatedAt: new Date().toISOString(), routes }, null, 1) + '\n', 'อัปเดตเส้นทาง (' + routes.length + ')');
+    dirty = false; saveLocal(); render();
+    toast('ซิงค์แล้ว — ระบบเริ่มสแกนรอบใหม่ ประมาณ 1–2 นาที', 3500);
+    return true;
+  } catch (e) {
+    toast('ซิงค์ไม่สำเร็จ: ' + e.message, 4500);
+    if (btn) { btn.disabled = false; btn.textContent = 'ซิงค์ตอนนี้'; }
+    return false;
+  }
+}
+async function triggerScan() {
+  if (!connected()) { openSettings(); return; }
+  if (dirty) { await syncRoutes(); return; }
+  try {
+    await gh('/actions/workflows/scan.yml/dispatches', { method:'POST', body: JSON.stringify({ ref: settings.branch || 'main' }) });
+    toast('สั่งสแกนแล้ว — กด ⟳ อีกครั้งในอีก 1–2 นาที', 3500);
+  } catch (e) { toast('สั่งสแกนไม่สำเร็จ: ' + e.message, 4500); }
+}
+
+// ---------- แสดงผล ----------
+function sparkline(hist, target) {
+  const pts = (hist || []).slice(-60);
+  if (pts.length < 2) return '';
+  const vals = pts.map(p => p.p);
+  let min = Math.min(...vals), max = Math.max(...vals);
+  if (target && target >= min * 0.85 && target <= max * 1.15) { min = Math.min(min, target); max = Math.max(max, target); }
+  const pad = (max - min) * 0.12 || max * 0.05 || 1; min -= pad; max += pad;
+  const W = 160, H = 46, x = i => (i / (pts.length - 1)) * W, y = v => H - ((v - min) / (max - min)) * H;
+  const d = vals.map((v, i) => (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(v).toFixed(1)).join(' ');
+  const last = vals[vals.length - 1];
+  const tl = target && target > min && target < max ? `<line x1="0" x2="${W}" y1="${y(target).toFixed(1)}" y2="${y(target).toFixed(1)}" stroke="var(--good)" stroke-width="1" stroke-dasharray="3 3" opacity=".8"/>` : '';
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-label="กราฟราคาย้อนหลัง">
+    <path d="${d} L${W} ${H} L0 ${H}Z" fill="var(--accent)" opacity=".08"/>${tl}
+    <path d="${d}" fill="none" stroke="var(--accent)" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+    <circle cx="${W}" cy="${y(last).toFixed(1)}" r="3" fill="var(--accent)"/></svg>`;
+}
+function timeLabel(r) {
+  if (!r.timeFrom && !r.timeTo) return '';
+  const map = { '05:00-11:59':'ช่วงเช้า', '12:00-17:59':'ช่วงบ่าย', '18:00-23:59':'ช่วงเย็น-ค่ำ' };
+  return map[r.timeFrom + '-' + r.timeTo] || `${r.timeFrom || '00:00'}–${r.timeTo || '23:59'}`;
+}
+function gfLink(r, d) {
+  const q = r.tripType === 'oneway' ? `Flights from ${r.origin} to ${r.destination} on ${d.depDate} one way` : `Flights from ${r.origin} to ${r.destination} on ${d.depDate} through ${d.retDate}`;
+  return 'https://www.google.com/travel/flights?q=' + encodeURIComponent(q) + '&curr=THB&hl=th';
+}
+function dealRow(r, d, i) {
+  const stops = n => n === 0 ? 'บินตรง' : 'ต่อ ' + n;
+  const ret = d.retDate ? ` → ${thD(d.retDate, true)}${d.retTime ? ' ' + d.retTime : ''} · ${dayDiff(d.depDate, d.retDate)} วัน` : '';
+  return `<div class="deal"><div class="rank">${i + 1}</div>
+    <div class="info"><b>${thD(d.depDate, true)}${d.depTime ? ' ' + d.depTime : ''}</b>${esc(ret)}
+      <div>${esc(d.airlineName || d.airline)} ${esc(d.flight)} · ${stops(d.stops)}${d.from && d.to ? ' · ' + esc(d.from) + '→' + esc(d.to) : ''}</div></div>
+    <div><div class="pr">${baht(d.price)}</div><div class="lk">${d.link ? `<a href="${esc(d.link)}" target="_blank" rel="noopener">จอง</a>` : ''}<a href="${esc(gfLink(r, d))}" target="_blank" rel="noopener">Google</a></div></div></div>`;
+}
+function card(r) {
+  const rec = data.routes?.[r.id] || {};
+  const c = rec.cheapest, target = Number(r.targetPrice || 0);
+  const expired = r.departTo < todayStr();
+  const hit = c && target && c.price <= target;
+  let badge;
+  if (r.active === false) badge = '<span class="badge b-pause">หยุดชั่วคราว</span>';
+  else if (expired) badge = '<span class="badge b-pause">เลยช่วงเดินทางแล้ว</span>';
+  else if (hit) badge = '<span class="badge b-hit">✓ ถึงราคาเป้า</span>';
+  else if (rec.status === 'error') badge = '<span class="badge b-err">สแกนผิดพลาด</span>';
+  else if (rec.status === 'empty') badge = '<span class="badge b-empty">ยังไม่พบราคา</span>';
+  else if (!rec.scannedAt) badge = '<span class="badge b-watch">รอสแกนรอบแรก</span>';
+  else badge = '<span class="badge b-watch">กำลังจับตา</span>';
+
+  const meta = [
+    `<span>${ICON.cal}${thD(r.departFrom)} – ${thDY(r.departTo)}</span>`,
+    r.tripType !== 'oneway' ? `<span>${ICON.stay}พัก ${r.stayMin === r.stayMax ? r.stayMin : r.stayMin + '–' + r.stayMax} วัน</span>` : '',
+    timeLabel(r) ? `<span>${ICON.clock}${timeLabel(r)}</span>` : '',
+    r.directOnly ? `<span>${ICON.direct}บินตรง</span>` : '',
+    target ? `<span>${ICON.bell}เป้า ${baht(target)}${r.dropPct ? ' · ลด ' + r.dropPct + '%' : ''}</span>` : (r.dropPct ? `<span>${ICON.bell}ลด ${r.dropPct}%</span>` : '')
+  ].join('');
+
+  let priceBlock;
+  if (c) {
+    const diff = rec.prevPrice ? c.price - rec.prevPrice : 0;
+    const trend = diff ? `<span class="trend ${diff < 0 ? 'down' : 'up'}">${diff < 0 ? '▼' : '▲'} ${baht(Math.abs(diff))}</span>` : '';
+    const ret = c.retDate ? ` → ${thD(c.retDate)}` : '';
+    priceBlock = `<div class="c-price"><div class="now"><small>ถูกสุดตอนนี้</small>
+        <div class="p ${hit ? 'hit' : ''}">${baht(c.price)}${trend}</div>
+        <div class="d">${thD(c.depDate, true)}${c.depTime ? ' ' + c.depTime : ''}${esc(ret)} · ${esc(c.airlineName || c.airline)}</div></div>
+        <div class="spark">${sparkline(rec.history, target)}</div></div>
+      <div class="sub">${rec.lowest ? `<span>ต่ำสุดที่เคยเห็น <b>${baht(rec.lowest.price)}</b></span>` : ''}<span>${rec.found || 0} ตัวเลือก</span><span>สแกน ${ago(rec.scannedAt)}</span></div>`;
+  } else {
+    const msg = r.active === false ? 'หยุดสแกนเส้นทางนี้ไว้' : rec.status === 'error' ? esc(rec.error || 'เรียก API ไม่สำเร็จ') :
+      rec.status === 'empty' ? 'ยังไม่มีราคาในช่วงนี้ — ระบบจะลองใหม่ทุก 4 ชม.' : 'จะเริ่มสแกนหลังซิงค์เส้นทาง';
+    priceBlock = `<div class="sub" style="padding-top:2px;font-size:13px">${msg}${rec.scannedAt ? ' · ' + ago(rec.scannedAt) : ''}</div>`;
+  }
+
+  const deals = (rec.top || []).length ? `<div class="deals" id="deals-${r.id}">${rec.top.map((d, i) => dealRow(r, d, i)).join('')}</div>` : '';
+  return `<article class="card ${r.active === false ? 'paused' : ''}">
+    <div class="c-top">
+      <div class="c-name"><span class="t">${esc(r.name || (PLACES[r.destination] ? 'ไป' + PLACES[r.destination] : 'ทริปของฉัน'))}</span>${badge}</div>
+      <div class="route">
+        <div><div class="code">${esc(r.origin)}</div><div class="city">${esc(PLACES[r.origin] || '')}</div></div>
+        <div class="path">${ICON.plane}<span class="kind">${r.tripType === 'oneway' ? 'เที่ยวเดียว' : 'ไป-กลับ'}</span></div>
+        <div class="r-end"><div class="code">${esc(r.destination)}</div><div class="city">${esc(PLACES[r.destination] || '')}</div></div>
+      </div>
+      <div class="meta">${meta}</div>
+    </div>
+    <div class="perf"><i></i></div>
+    ${priceBlock}
+    <div class="actions">
+      ${deals ? `<button class="primary" data-act="deals" data-id="${r.id}">${ICON.list}ท็อป ${Math.min(rec.top.length, 8)}</button>` : ''}
+      <button data-act="edit" data-id="${r.id}">${ICON.edit}แก้ไข</button>
+      <button data-act="toggle" data-id="${r.id}" aria-label="${r.active === false ? 'เปิดสแกน' : 'หยุดชั่วคราว'}">${r.active === false ? ICON.play + 'เปิด' : ICON.pause + 'พัก'}</button>
+    </div>
+    ${deals}
+  </article>`;
+}
+function render() {
+  const list = routes || [];
+  $('#updatedLine').textContent = data.updatedAt ? 'สแกนล่าสุด ' + ago(data.updatedAt) : 'ยังไม่มีผลสแกน';
+  const live = list.filter(r => r.active !== false);
+  const hits = live.filter(r => { const c = data.routes?.[r.id]?.cheapest; return c && r.targetPrice && c.price <= r.targetPrice; });
+  const prices = live.map(r => data.routes?.[r.id]?.cheapest?.price).filter(Boolean);
+  $('#stRoutes').textContent = live.length;
+  $('#stHits').textContent = hits.length;
+  $('#stBest').textContent = prices.length ? baht(Math.min(...prices)) : '–';
+
+  let b = '';
+  if (!connected()) b += `<div class="banner"><div><b>ยังไม่ได้เชื่อม GitHub</b><br>เส้นทางเก็บในเครื่องนี้เท่านั้น ระบบสแกน/แจ้งเตือนอัตโนมัติจะยังไม่ทำงาน</div><button onclick="openSettings()">ตั้งค่า</button></div>`;
+  if (dirty) b += `<div class="syncbar"><span>มีเส้นทางที่ยังไม่ซิงค์ขึ้นระบบสแกน</span><button id="syncBtn" onclick="syncRoutes()">ซิงค์ตอนนี้</button></div>`;
+  $('#banner').innerHTML = b;
+
+  if (!list.length) {
+    $('#list').innerHTML = `<div class="empty"><svg viewBox="0 0 24 24" fill="currentColor" opacity=".5"><path d="M21 15.5v-1.7l-8-5V3.6a1.6 1.6 0 0 0-3.2 0v5.2l-8 5v1.7l8-2.4v5.2l-2.2 1.6V21l3.8-1.1 3.8 1.1v-1.3L13 18.1v-5.2z"/></svg>
+      <h3>ยังไม่มีเส้นทาง</h3><p>เพิ่มเส้นทางที่อยากไป กำหนดช่วงวันเดินทางและราคาที่รับได้<br>ระบบจะสแกนทุก 4 ชม. แล้วแจ้งเตือนเมื่อเจอตั๋วถูก</p></div>`;
+    return;
+  }
+  const order = r => (r.active === false ? 2 : 0) + (r.departTo < todayStr() ? 1 : 0);
+  $('#list').innerHTML = [...list].sort((a, b) => order(a) - order(b) || (a.departFrom || '').localeCompare(b.departFrom || '')).map(card).join('');
+}
+
+// ---------- ฟอร์มเส้นทาง ----------
+let tripType = 'roundtrip', timeSel = { f:'', t:'' };
+function setTrip(v) { tripType = v; document.querySelectorAll('#segTrip button').forEach(b => b.classList.toggle('on', b.dataset.v === v)); $('#stayBox').style.display = v === 'oneway' ? 'none' : ''; }
+function setTime(f, t, custom) {
+  timeSel = { f, t };
+  const btns = [...document.querySelectorAll('#timeChips button')];
+  const preset = btns.find(b => b.dataset.f === f && b.dataset.t === t);
+  const isCustom = custom || (!preset && (f || t));
+  btns.forEach(b => b.classList.toggle('on', isCustom ? b.dataset.f === 'custom' : b === preset));
+  $('#customTime').style.display = isCustom ? 'flex' : 'none';
+  if (isCustom) { $('#fTimeFrom').value = f; $('#fTimeTo').value = t; }
+}
+function openRoute(id) {
+  editingId = id || null;
+  const r = routes.find(x => x.id === id) || {
+    name:'', origin:'BKK', destination:'', tripType:'roundtrip', departFrom: addDays(todayStr(), 14), departTo: addDays(todayStr(), 45),
+    stayMin:3, stayMax:7, timeFrom:'', timeTo:'', directOnly:false, targetPrice:'', dropPct:10
+  };
+  $('#routeTitle').textContent = id ? 'แก้ไขเส้นทาง' : 'เพิ่มเส้นทาง';
+  $('#fName').value = r.name || ''; $('#fOrigin').value = r.origin || ''; $('#fDest').value = r.destination || '';
+  $('#fFrom').value = r.departFrom; $('#fTo').value = r.departTo; $('#fFrom').min = $('#fTo').min = todayStr();
+  $('#fStayMin').value = r.stayMin ?? 3; $('#fStayMax').value = r.stayMax ?? 7;
+  $('#fDirect').checked = !!r.directOnly; $('#fTarget').value = r.targetPrice || ''; $('#fDrop').value = String(r.dropPct ?? 0);
+  setTrip(r.tripType || 'roundtrip'); setTime(r.timeFrom || '', r.timeTo || '');
+  $('#btnDelete').style.display = id ? '' : 'none';
+  $('#formErr').textContent = ''; codeHint();
+  $('#dlgRoute').showModal();
+}
+function codeHint() {
+  const o = $('#fOrigin').value.toUpperCase(), d = $('#fDest').value.toUpperCase();
+  const parts = [o && (PLACES[o] ? o + ' = ' + PLACES[o] : ''), d && (PLACES[d] ? d + ' = ' + PLACES[d] : '')].filter(Boolean);
+  $('#codeHint').textContent = parts.length ? parts.join(' · ') : 'พิมพ์รหัสสนามบิน/เมือง 3 ตัว หรือเลือกจากรายการ (เช่น TYO = ทุกสนามบินในโตเกียว)';
+}
+function readForm() {
+  const r = {
+    id: editingId || uid(),
+    name: $('#fName').value.trim(),
+    origin: $('#fOrigin').value.trim().toUpperCase(),
+    destination: $('#fDest').value.trim().toUpperCase(),
+    tripType,
+    departFrom: $('#fFrom').value, departTo: $('#fTo').value,
+    stayMin: parseInt($('#fStayMin').value, 10) || 1, stayMax: parseInt($('#fStayMax').value, 10) || 1,
+    timeFrom: timeSel.f === 'custom' ? '' : timeSel.f, timeTo: timeSel.f === 'custom' ? '' : timeSel.t,
+    directOnly: $('#fDirect').checked,
+    targetPrice: Math.max(0, parseInt($('#fTarget').value, 10) || 0),
+    dropPct: parseInt($('#fDrop').value, 10) || 0,
+    active: editingId ? (routes.find(x => x.id === editingId)?.active !== false) : true
+  };
+  if ($('#customTime').style.display !== 'none') { r.timeFrom = $('#fTimeFrom').value; r.timeTo = $('#fTimeTo').value; }
+  if (r.tripType === 'oneway') { delete r.stayMin; delete r.stayMax; }
+  const iata = /^[A-Z]{3}$/;
+  if (!iata.test(r.origin)) return 'รหัสต้นทางต้องเป็นตัวอักษร 3 ตัว เช่น BKK';
+  if (!iata.test(r.destination)) return 'รหัสปลายทางต้องเป็นตัวอักษร 3 ตัว เช่น TYO';
+  if (r.origin === r.destination) return 'ต้นทางและปลายทางต้องไม่ซ้ำกัน';
+  if (!r.departFrom || !r.departTo) return 'เลือกช่วงวันออกเดินทางให้ครบ';
+  if (r.departFrom > r.departTo) return 'วันเริ่มต้องไม่เกินวันสิ้นสุด';
+  if (r.departTo < todayStr()) return 'ช่วงวันเดินทางต้องเป็นวันในอนาคต';
+  if (dayDiff(r.departFrom, r.departTo) > 365) return 'ช่วงวันเดินทางยาวได้ไม่เกิน 12 เดือน';
+  if (r.tripType !== 'oneway' && r.stayMin > r.stayMax) return 'จำนวนวันพักขั้นต่ำต้องไม่เกินขั้นสูงสุด';
+  return r;
+}
+
+// ---------- ตั้งค่า ----------
+function openSettings() {
+  $('#sOwner').value = settings.owner || ''; $('#sRepo').value = settings.repo || ''; $('#sBranch').value = settings.branch || 'main'; $('#sToken').value = settings.token || '';
+  $('#sStatus').className = 'statusline'; markTheme();
+  $('#dlgSettings').showModal();
+}
+function readSettings() { return { owner: $('#sOwner').value.trim(), repo: $('#sRepo').value.trim(), branch: $('#sBranch').value.trim() || 'main', token: $('#sToken').value.trim() }; }
+function applyTheme(v) { if (v) document.documentElement.dataset.theme = v; else delete document.documentElement.dataset.theme; }
+function markTheme() { const v = jget(LS.theme, ''); document.querySelectorAll('#segTheme button').forEach(b => b.classList.toggle('on', b.dataset.v === v)); }
+
+// ---------- อีเวนต์ ----------
+$('#btnAdd').onclick = () => openRoute();
+$('#btnSettings').onclick = openSettings;
+$('#btnRefresh').onclick = async () => { const s = $('#btnRefresh svg'); s.classList.add('spin'); await loadAll(true); s.classList.remove('spin'); };
+$('#btnScan').onclick = triggerScan;
+document.querySelectorAll('[data-close]').forEach(b => b.onclick = () => b.closest('dialog').close());
+document.querySelectorAll('dialog').forEach(d => d.addEventListener('click', e => { if (e.target === d) d.close(); }));
+document.querySelectorAll('#segTrip button').forEach(b => b.onclick = () => setTrip(b.dataset.v));
+document.querySelectorAll('#timeChips button').forEach(b => b.onclick = () => b.dataset.f === 'custom' ? setTime($('#fTimeFrom').value || '06:00', $('#fTimeTo').value || '12:00', true) : setTime(b.dataset.f, b.dataset.t));
+$('#btnSwap').onclick = () => { const o = $('#fOrigin').value; $('#fOrigin').value = $('#fDest').value; $('#fDest').value = o; codeHint(); };
+['#fOrigin', '#fDest'].forEach(s => $(s).addEventListener('input', e => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z]/g, ''); codeHint(); }));
+$('#fFrom').addEventListener('change', () => { if ($('#fTo').value < $('#fFrom').value) $('#fTo').value = addDays($('#fFrom').value, 7); });
+
+$('#routeForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const r = readForm();
+  if (typeof r === 'string') { $('#formErr').textContent = r; return; }
+  const i = routes.findIndex(x => x.id === r.id);
+  if (i >= 0) routes[i] = r; else routes.push(r);
+  dirty = true; saveLocal(); render();
+  $('#dlgRoute').close();
+  if (connected()) await syncRoutes(); else toast('บันทึกในเครื่องแล้ว');
+});
+$('#btnDelete').onclick = async () => {
+  const r = routes.find(x => x.id === editingId); if (!r) return;
+  if (!confirm(`ลบเส้นทาง ${r.origin} → ${r.destination} ?`)) return;
+  routes = routes.filter(x => x.id !== editingId);
+  dirty = true; saveLocal(); render(); $('#dlgRoute').close();
+  if (connected()) await syncRoutes(); else toast('ลบแล้ว');
+};
+$('#list').addEventListener('click', async e => {
+  const b = e.target.closest('button[data-act]'); if (!b) return;
+  const id = b.dataset.id;
+  if (b.dataset.act === 'edit') openRoute(id);
+  if (b.dataset.act === 'deals') document.getElementById('deals-' + id)?.classList.toggle('open');
+  if (b.dataset.act === 'toggle') {
+    const r = routes.find(x => x.id === id); r.active = r.active === false;
+    dirty = true; saveLocal(); render();
+    if (connected()) await syncRoutes();
+  }
+});
+
+$('#btnSaveSettings').onclick = async () => {
+  const s = readSettings();
+  const changedRepo = s.owner !== settings.owner || s.repo !== settings.repo || s.branch !== settings.branch;
+  settings = s; jset(LS.settings, s);
+  $('#dlgSettings').close();
+  toast('บันทึกการตั้งค่าแล้ว');
+  if (changedRepo && !dirty) { jset(LS.routes, null); }
+  await loadAll();
+};
+$('#btnTest').onclick = async () => {
+  const prev = settings; settings = readSettings();
+  const st = $('#sStatus'); st.className = 'statusline show'; st.textContent = 'กำลังทดสอบ…';
+  try {
+    const repo = await gh('');
+    const ok = [];
+    ok.push('✓ เข้าถึง repo ' + repo.full_name + ' ได้');
+    ok.push(repo.permissions?.push ? '✓ มีสิทธิ์เขียนไฟล์' : '✗ token ไม่มีสิทธิ์เขียน (Contents: Read and write)');
+    try { await gh('/actions/workflows/scan.yml'); ok.push('✓ พบ workflow สแกนราคา'); } catch { ok.push('✗ ไม่พบ .github/workflows/scan.yml'); }
+    const f = await ghGetFile('routes.json'); ok.push(f.sha ? '✓ พบ routes.json' : '• ยังไม่มี routes.json (จะสร้างให้ตอนซิงค์)');
+    st.innerHTML = ok.map(esc).join('<br>');
+  } catch (e) { st.textContent = '✗ เชื่อมต่อไม่ได้: ' + e.message + ' — ตรวจ user/repo/token'; }
+  settings = prev;
+};
+document.querySelectorAll('#segTheme button').forEach(b => b.onclick = () => { jset(LS.theme, b.dataset.v); applyTheme(b.dataset.v); markTheme(); });
+$('#btnExport').onclick = () => {
+  const blob = new Blob([JSON.stringify({ updatedAt: new Date().toISOString(), routes }, null, 1)], { type:'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'routes.json'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+};
+$('#btnImport').onclick = () => $('#fileImport').click();
+$('#fileImport').onchange = async e => {
+  const file = e.target.files[0]; if (!file) return;
+  try {
+    const j = JSON.parse(await file.text()); const arr = Array.isArray(j) ? j : j.routes;
+    if (!Array.isArray(arr)) throw new Error('รูปแบบไฟล์ไม่ถูกต้อง');
+    routes = arr; dirty = true; saveLocal(); render(); $('#dlgSettings').close();
+    toast('นำเข้า ' + arr.length + ' เส้นทางแล้ว');
+  } catch (err) { toast('นำเข้าไม่ได้: ' + err.message, 4000); }
+  e.target.value = '';
+};
+
+// ---------- เริ่มต้น ----------
+$('#airports').innerHTML = Object.entries(PLACES).map(([k, v]) => `<option value="${k}">${v}</option>`).join('');
+applyTheme(jget(LS.theme, ''));
+loadAll();
+setInterval(() => { if (document.visibilityState === 'visible') render(); }, 60000);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && !dirty) loadAll(); });
+if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
+</body>
+</html>
