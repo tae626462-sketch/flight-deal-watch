@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-11-01T06:40:00.000Z",
+ "updatedAt": "2026-11-01T08:25:44.266Z",
  "routes": [
   {
    "id": "r_example1",
@@ -15,6 +15,23 @@
    "timeTo": "",
    "directOnly": false,
    "targetPrice": 12000,
+   "dropPct": 10,
+   "active": true
+  },
+  {
+   "id": "r_k7vhe22",
+   "name": "Korea trip",
+   "origin": "BKK",
+   "destination": "ICN",
+   "tripType": "roundtrip",
+   "departFrom": "2026-12-09",
+   "departTo": "2026-12-14",
+   "stayMin": 3,
+   "stayMax": 7,
+   "timeFrom": "18:00",
+   "timeTo": "23:59",
+   "directOnly": true,
+   "targetPrice": 0,
    "dropPct": 10,
    "active": true
   }
