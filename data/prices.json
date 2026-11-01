@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-11-01T08:58:53.902Z",
+ "updatedAt": "2026-11-01T08:59:51.543Z",
  "currency": "THB",
  "routes": {
   "r_k7vhe22": {
@@ -8,12 +8,16 @@
     {
      "t": "2026-11-01T08:58:53.902Z",
      "p": 14652
+    },
+    {
+     "t": "2026-11-01T08:59:51.543Z",
+     "p": 14652
     }
    ],
-   "scannedAt": "2026-11-01T08:58:53.902Z",
+   "scannedAt": "2026-11-01T08:59:51.543Z",
    "status": "ok",
    "error": "",
-   "prevPrice": null,
+   "prevPrice": 14652,
    "cheapest": {
     "price": 14652,
     "airline": "ZE",
@@ -93,12 +97,16 @@
     {
      "t": "2026-11-01T08:58:53.902Z",
      "p": 6349
+    },
+    {
+     "t": "2026-11-01T08:59:51.543Z",
+     "p": 6349
     }
    ],
-   "scannedAt": "2026-11-01T08:58:53.902Z",
+   "scannedAt": "2026-11-01T08:59:51.543Z",
    "status": "ok",
    "error": "",
-   "prevPrice": null,
+   "prevPrice": 6349,
    "cheapest": {
     "price": 6349,
     "airline": "TW",
