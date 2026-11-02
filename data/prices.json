@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-11-02T14:51:03.590Z",
+ "updatedAt": "2026-11-02T16:16:18.603Z",
  "currency": "THB",
  "lastDigest": "2026-11-02",
  "routes": {
@@ -9,12 +9,16 @@
     {
      "t": "2026-11-02T14:51:03.590Z",
      "p": 14536
+    },
+    {
+     "t": "2026-11-02T16:16:18.603Z",
+     "p": 14536
     }
    ],
-   "scannedAt": "2026-11-02T14:51:03.590Z",
+   "scannedAt": "2026-11-02T16:16:18.603Z",
    "status": "ok",
    "error": "",
-   "prevPrice": null,
+   "prevPrice": 14536,
    "cheapest": {
     "price": 14536,
     "airline": "ZE",
@@ -85,14 +89,6 @@
      }
     ]
    }
-  },
-  "r_hh7c0by": {
-   "sig": "ICN|BKK|oneway|2026-12-14|2026-12-14|||||true",
-   "history": [],
-   "scannedAt": "2026-11-02T14:51:03.590Z",
-   "status": "empty",
-   "error": "",
-   "found": 0
   }
  }
 }
