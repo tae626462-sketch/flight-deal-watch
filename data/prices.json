@@ -1,117 +1,37 @@
 {
- "updatedAt": "2026-11-02T14:49:25.222Z",
+ "updatedAt": "2026-11-02T14:51:03.590Z",
  "currency": "THB",
  "lastDigest": "2026-11-02",
  "routes": {
   "r_k7vhe22": {
-   "sig": "BKK|ICN|roundtrip|2026-12-08|2026-12-14|3|7|||true",
+   "sig": "BKK|ICN|roundtrip|2026-12-08|2026-12-14|6|6|||true",
    "history": [
     {
-     "t": "2026-11-02T14:49:25.222Z",
-     "p": 13298
+     "t": "2026-11-02T14:51:03.590Z",
+     "p": 14536
     }
    ],
-   "scannedAt": "2026-11-02T14:49:25.222Z",
+   "scannedAt": "2026-11-02T14:51:03.590Z",
    "status": "ok",
    "error": "",
    "prevPrice": null,
    "cheapest": {
-    "price": 13298,
-    "airline": "TW",
-    "airlineName": "T'way",
-    "flight": "TW102",
+    "price": 14536,
+    "airline": "ZE",
+    "airlineName": "Eastar Jet",
+    "flight": "ZE512",
     "from": "BKK",
     "to": "ICN",
-    "depDate": "2026-12-14",
-    "depTime": "01:30",
-    "retDate": "2026-12-21",
+    "depDate": "2026-12-10",
+    "depTime": "22:25",
+    "retDate": "2026-12-16",
     "retTime": "19:50",
     "stops": 0,
     "retStops": 0,
-    "duration": 330,
-    "link": "https://www.aviasales.com/search/BKK1412ICN21121?t=TW17972118001797238800000330BKKICN17978826001797898200000380ICNBKK_ffafd2d7824bdc17964cbca934de916d_31813&search_date=26102026&expected_price_uuid=01a178fc-e2ef-8031-2136-f479aa06400d&static_fare_key=TY%7CP1_JW%7CH1%7CL1_1_15%7CCH0%7CR0%7CTBC1&itinerary_key=YrwZBtKU-1kC-CGA0djXSA&origin_airports=1&destination_airports=0&expected_price_source=share&expected_price_currency=thb&expected_price=13298"
+    "duration": 355,
+    "link": "https://www.aviasales.com/search/BKK1012ICN16121?t=TW17969415001796970000000355BKKICN17974506001797466200000380ICNBKK_8bee28f1c8c97e02fca01ba76cacb14a_35053&search_date=01112026&expected_price_uuid=01a19589-95cc-8030-a2c4-54e216a4382e&static_fare_key=TY%7CP1%7CH1%7CL0%7CCH0%7CR0%7CTBC0&itinerary_key=yLhsDlP9S4hiPvmWCTOTHA&origin_airports=1&destination_airports=0&expected_price_source=share&expected_price_currency=thb&expected_price=14536"
    },
    "top": [
-    {
-     "price": 13298,
-     "airline": "TW",
-     "airlineName": "T'way",
-     "flight": "TW102",
-     "from": "BKK",
-     "to": "ICN",
-     "depDate": "2026-12-14",
-     "depTime": "01:30",
-     "retDate": "2026-12-21",
-     "retTime": "19:50",
-     "stops": 0,
-     "retStops": 0,
-     "duration": 330,
-     "link": "https://www.aviasales.com/search/BKK1412ICN21121?t=TW17972118001797238800000330BKKICN17978826001797898200000380ICNBKK_ffafd2d7824bdc17964cbca934de916d_31813&search_date=26102026&expected_price_uuid=01a178fc-e2ef-8031-2136-f479aa06400d&static_fare_key=TY%7CP1_JW%7CH1%7CL1_1_15%7CCH0%7CR0%7CTBC1&itinerary_key=YrwZBtKU-1kC-CGA0djXSA&origin_airports=1&destination_airports=0&expected_price_source=share&expected_price_currency=thb&expected_price=13298"
-    },
-    {
-     "price": 14087,
-     "airline": "VZ",
-     "airlineName": "ไทยเวียตเจ็ท",
-     "flight": "VZ850",
-     "from": "BKK",
-     "to": "ICN",
-     "depDate": "2026-12-09",
-     "depTime": "02:40",
-     "retDate": "2026-12-16",
-     "retTime": "12:10",
-     "stops": 0,
-     "retStops": 0,
-     "duration": 320,
-     "link": "https://www.aviasales.com/search/BKK0912ICN16121?t=VZ17967840001796810400000320BKKICN17974230001797438000000370ICNBKK_2f2654935da64722202fed9852e33f0c_33968&search_date=01112026&expected_price_uuid=01a197fe-a12e-8030-69a8-1a87f735b23b&static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0&itinerary_key=XcnpTamd5YKmJYwCX9HwRg&origin_airports=1&destination_airports=0&expected_price_source=share&expected_price_currency=thb&expected_price=14087"
-    },
-    {
-     "price": 14227,
-     "airline": "TW",
-     "airlineName": "T'way",
-     "flight": "TW102",
-     "from": "BKK",
-     "to": "ICN",
-     "depDate": "2026-12-14",
-     "depTime": "01:30",
-     "retDate": "2026-12-17",
-     "retTime": "19:50",
-     "stops": 0,
-     "retStops": 0,
-     "duration": 330,
-     "link": "https://www.aviasales.com/search/BKK1412ICN17121?t=TW17972118001797238800000330BKKICN17975370001797552600000380ICNBKK_e94a0bd164bbcd6ac08eaab5ef5ac1bf_33985&search_date=28102026&expected_price_uuid=01a180b3-a1fe-8030-27e1-95686a4ba170&static_fare_key=TY%7CP0%7CH1%7CL1_1_15%7CCH0%7CR0%7CTBC1&itinerary_key=XqC9sRRlQZzY3udNhIwmWQ&origin_airports=1&destination_airports=0&expected_price_source=share&expected_price_currency=thb&expected_price=14227"
-    },
-    {
-     "price": 14280,
-     "airline": "TG",
-     "airlineName": "การบินไทย",
-     "flight": "TG652",
-     "from": "BKK",
-     "to": "ICN",
-     "depDate": "2026-12-11",
-     "depTime": "08:00",
-     "retDate": "2026-12-18",
-     "retTime": "09:35",
-     "stops": 0,
-     "retStops": 0,
-     "duration": 325,
-     "link": "https://www.aviasales.com/search/BKK1112ICN18121?t=TG17969760001797002700000325BKKICN17975865001797600600000355ICNBKK_53cc3af444b4f2ac5d1529e100e40f14_34129&search_date=02112026&expected_price_uuid=01a199b4-153b-8030-6eac-bb7b3c77aa21&static_fare_key=TY%7CP1%7CH1%7CL1_1_23%7CCH0%7CR0%7CTBC1&itinerary_key=tF9k3LR8W_WdHQXxxkHIlQ&origin_airports=1&destination_airports=0&expected_price_source=share&expected_price_currency=thb&expected_price=14280"
-    },
-    {
-     "price": 14464,
-     "airline": "OZ",
-     "airlineName": "Asiana",
-     "flight": "OZ5658",
-     "from": "BKK",
-     "to": "ICN",
-     "depDate": "2026-12-11",
-     "depTime": "12:25",
-     "retDate": "2026-12-18",
-     "retTime": "07:10",
-     "stops": 0,
-     "retStops": 0,
-     "duration": 325,
-     "link": "https://www.aviasales.com/search/BKK1112ICN18121?t=OZ17969919001797018600000325BKKICN17975778001797592500000365ICNBKK_7b2ba78e4728eff2b8cccf42c7f6e394_34487&search_date=27102026&expected_price_uuid=01a17e2e-e7a8-8031-626b-43d5771644c8&static_fare_key=TY%7CP1%7CH1%7CL0%7CCH0%7CR0%7CTBC0&itinerary_key=T5bJVmK2yDde6D-gmDUzcw&origin_airports=1&destination_airports=0&expected_price_source=share&expected_price_currency=thb&expected_price=14464"
-    },
     {
      "price": 14536,
      "airline": "ZE",
@@ -127,69 +47,41 @@
      "retStops": 0,
      "duration": 355,
      "link": "https://www.aviasales.com/search/BKK1012ICN16121?t=TW17969415001796970000000355BKKICN17974506001797466200000380ICNBKK_8bee28f1c8c97e02fca01ba76cacb14a_35053&search_date=01112026&expected_price_uuid=01a19589-95cc-8030-a2c4-54e216a4382e&static_fare_key=TY%7CP1%7CH1%7CL0%7CCH0%7CR0%7CTBC0&itinerary_key=yLhsDlP9S4hiPvmWCTOTHA&origin_airports=1&destination_airports=0&expected_price_source=share&expected_price_currency=thb&expected_price=14536"
-    },
-    {
-     "price": 14822,
-     "airline": "TW",
-     "airlineName": "T'way",
-     "flight": "TW102",
-     "from": "BKK",
-     "to": "ICN",
-     "depDate": "2026-12-14",
-     "depTime": "01:30",
-     "retDate": "2026-12-18",
-     "retTime": "12:10",
-     "stops": 0,
-     "retStops": 0,
-     "duration": 330,
-     "link": "https://www.aviasales.com/search/BKK1412ICN18121?t=VZ17972118001797238800000330BKKICN17975958001797610800000370ICNBKK_b8da4fef2f55ace3f2eeec6fb84e6a7d_35676&search_date=30102026&expected_price_uuid=01a18b68-297b-8030-afec-6e9533c30a1f&static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0&itinerary_key=x8tMHXtpuJzocraVYzUN5w&origin_airports=1&destination_airports=0&expected_price_source=share&expected_price_currency=thb&expected_price=14822"
     }
    ],
-   "found": 7,
+   "found": 1,
    "lowest": {
-    "price": 13298,
-    "at": "2026-11-02T14:49:25.222Z",
+    "price": 14536,
+    "at": "2026-11-02T14:51:03.590Z",
     "deal": {
-     "price": 13298,
-     "airline": "TW",
-     "airlineName": "T'way",
-     "flight": "TW102",
+     "price": 14536,
+     "airline": "ZE",
+     "airlineName": "Eastar Jet",
+     "flight": "ZE512",
      "from": "BKK",
      "to": "ICN",
-     "depDate": "2026-12-14",
-     "depTime": "01:30",
-     "retDate": "2026-12-21",
+     "depDate": "2026-12-10",
+     "depTime": "22:25",
+     "retDate": "2026-12-16",
      "retTime": "19:50",
      "stops": 0,
      "retStops": 0,
-     "duration": 330,
-     "link": "https://www.aviasales.com/search/BKK1412ICN21121?t=TW17972118001797238800000330BKKICN17978826001797898200000380ICNBKK_ffafd2d7824bdc17964cbca934de916d_31813&search_date=26102026&expected_price_uuid=01a178fc-e2ef-8031-2136-f479aa06400d&static_fare_key=TY%7CP1_JW%7CH1%7CL1_1_15%7CCH0%7CR0%7CTBC1&itinerary_key=YrwZBtKU-1kC-CGA0djXSA&origin_airports=1&destination_airports=0&expected_price_source=share&expected_price_currency=thb&expected_price=13298"
+     "duration": 355,
+     "link": "https://www.aviasales.com/search/BKK1012ICN16121?t=TW17969415001796970000000355BKKICN17974506001797466200000380ICNBKK_8bee28f1c8c97e02fca01ba76cacb14a_35053&search_date=01112026&expected_price_uuid=01a19589-95cc-8030-a2c4-54e216a4382e&static_fare_key=TY%7CP1%7CH1%7CL0%7CCH0%7CR0%7CTBC0&itinerary_key=yLhsDlP9S4hiPvmWCTOTHA&origin_airports=1&destination_airports=0&expected_price_source=share&expected_price_currency=thb&expected_price=14536"
     }
    },
    "stats": {
-    "days": 4,
-    "min": 13298,
-    "p25": 13890,
-    "median": 14184,
-    "p75": 14344,
+    "days": 1,
+    "min": 14536,
+    "p25": 14536,
+    "median": 14536,
+    "p75": 14536,
     "max": 14536,
-    "suggest": 13800,
+    "suggest": 14500,
     "byDate": [
-     {
-      "d": "2026-12-09",
-      "p": 14087
-     },
      {
       "d": "2026-12-10",
       "p": 14536
-     },
-     {
-      "d": "2026-12-11",
-      "p": 14280
-     },
-     {
-      "d": "2026-12-14",
-      "p": 13298
      }
     ]
    }
@@ -197,7 +89,7 @@
   "r_hh7c0by": {
    "sig": "ICN|BKK|oneway|2026-12-14|2026-12-14|||||true",
    "history": [],
-   "scannedAt": "2026-11-02T14:49:25.222Z",
+   "scannedAt": "2026-11-02T14:51:03.590Z",
    "status": "empty",
    "error": "",
    "found": 0
