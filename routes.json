@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-11-02T09:57:18.216Z",
+ "updatedAt": "2026-11-02T14:49:13.901Z",
  "prefs": {
   "digest": true,
   "digestHour": 7
@@ -10,14 +10,16 @@
    "name": "Korea trip",
    "origin": "BKK",
    "destination": "ICN",
-   "tripType": "oneway",
-   "departFrom": "2026-12-09",
-   "departTo": "2026-12-09",
+   "tripType": "roundtrip",
+   "departFrom": "2026-12-08",
+   "departTo": "2026-12-14",
+   "stayMin": 3,
+   "stayMax": 7,
    "timeFrom": "",
    "timeTo": "",
    "directOnly": true,
    "notifyNew": true,
-   "targetPrice": 7000,
+   "targetPrice": 0,
    "dropPct": 10,
    "active": true
   },
