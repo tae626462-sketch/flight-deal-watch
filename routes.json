@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-11-02T14:50:48.697Z",
+ "updatedAt": "2026-11-02T16:15:57.902Z",
  "prefs": {
   "digest": true,
   "digestHour": 7
@@ -20,22 +20,6 @@
    "directOnly": true,
    "notifyNew": true,
    "targetPrice": 0,
-   "dropPct": 10,
-   "active": true
-  },
-  {
-   "id": "r_hh7c0by",
-   "name": "เกาหลี",
-   "origin": "ICN",
-   "destination": "BKK",
-   "tripType": "oneway",
-   "departFrom": "2026-12-14",
-   "departTo": "2026-12-14",
-   "timeFrom": "",
-   "timeTo": "",
-   "directOnly": true,
-   "notifyNew": true,
-   "targetPrice": 8000,
    "dropPct": 10,
    "active": true
   }
