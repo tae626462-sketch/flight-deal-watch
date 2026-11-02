@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-11-02T06:15:31.698Z",
+ "updatedAt": "2026-11-02T09:57:28.011Z",
  "currency": "THB",
  "lastDigest": "2026-11-02",
  "routes": {
@@ -13,14 +13,18 @@
     {
      "t": "2026-11-02T06:15:31.698Z",
      "p": 5928
+    },
+    {
+     "t": "2026-11-02T09:57:28.011Z",
+     "p": 5710
     }
    ],
-   "scannedAt": "2026-11-02T06:15:31.698Z",
+   "scannedAt": "2026-11-02T09:57:28.011Z",
    "status": "ok",
    "error": "",
-   "prevPrice": 6986,
+   "prevPrice": 5928,
    "cheapest": {
-    "price": 5928,
+    "price": 5710,
     "airline": "ZE",
     "airlineName": "Eastar Jet",
     "flight": "ZE512",
@@ -33,11 +37,11 @@
     "stops": 0,
     "retStops": 0,
     "duration": 355,
-    "link": "https://www.aviasales.com/search/BKK0912ICN1?t=ZE17968551001796883600000355BKKICN_54fdfc7dd7e6c8f9dc44c71dc2120e85_14165&search_date=02112026&expected_price_uuid=01a19a76-d303-8030-a52f-07403954af86&static_fare_key=TY%7CP1%7CH1%7CL0%7CCH0%7CR0%7CTBC0&itinerary_key=PmtHu-32S4enQ8OBPzk2WA&destination_airports=0&expected_price_source=share&expected_price_currency=thb&expected_price=5928"
+    "link": "https://www.aviasales.com/search/BKK0912ICN1?t=ZE17968551001796883600000355BKKICN_54fdfc7dd7e6c8f9dc44c71dc2120e85_13629&search_date=02112026&expected_price_uuid=01a19afd-e1ec-8030-eabc-cc82b5d92c71&static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0&itinerary_key=PmtHu-32S4enQ8OBPzk2WA&destination_airports=0&expected_price_source=share&expected_price_currency=thb&expected_price=5710"
    },
    "top": [
     {
-     "price": 5928,
+     "price": 5710,
      "airline": "ZE",
      "airlineName": "Eastar Jet",
      "flight": "ZE512",
@@ -50,15 +54,15 @@
      "stops": 0,
      "retStops": 0,
      "duration": 355,
-     "link": "https://www.aviasales.com/search/BKK0912ICN1?t=ZE17968551001796883600000355BKKICN_54fdfc7dd7e6c8f9dc44c71dc2120e85_14165&search_date=02112026&expected_price_uuid=01a19a76-d303-8030-a52f-07403954af86&static_fare_key=TY%7CP1%7CH1%7CL0%7CCH0%7CR0%7CTBC0&itinerary_key=PmtHu-32S4enQ8OBPzk2WA&destination_airports=0&expected_price_source=share&expected_price_currency=thb&expected_price=5928"
+     "link": "https://www.aviasales.com/search/BKK0912ICN1?t=ZE17968551001796883600000355BKKICN_54fdfc7dd7e6c8f9dc44c71dc2120e85_13629&search_date=02112026&expected_price_uuid=01a19afd-e1ec-8030-eabc-cc82b5d92c71&static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0&itinerary_key=PmtHu-32S4enQ8OBPzk2WA&destination_airports=0&expected_price_source=share&expected_price_currency=thb&expected_price=5710"
     }
    ],
    "found": 1,
    "lowest": {
-    "price": 5928,
-    "at": "2026-11-02T06:15:31.698Z",
+    "price": 5710,
+    "at": "2026-11-02T09:57:28.011Z",
     "deal": {
-     "price": 5928,
+     "price": 5710,
      "airline": "ZE",
      "airlineName": "Eastar Jet",
      "flight": "ZE512",
@@ -71,31 +75,31 @@
      "stops": 0,
      "retStops": 0,
      "duration": 355,
-     "link": "https://www.aviasales.com/search/BKK0912ICN1?t=ZE17968551001796883600000355BKKICN_54fdfc7dd7e6c8f9dc44c71dc2120e85_14165&search_date=02112026&expected_price_uuid=01a19a76-d303-8030-a52f-07403954af86&static_fare_key=TY%7CP1%7CH1%7CL0%7CCH0%7CR0%7CTBC0&itinerary_key=PmtHu-32S4enQ8OBPzk2WA&destination_airports=0&expected_price_source=share&expected_price_currency=thb&expected_price=5928"
+     "link": "https://www.aviasales.com/search/BKK0912ICN1?t=ZE17968551001796883600000355BKKICN_54fdfc7dd7e6c8f9dc44c71dc2120e85_13629&search_date=02112026&expected_price_uuid=01a19afd-e1ec-8030-eabc-cc82b5d92c71&static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0&itinerary_key=PmtHu-32S4enQ8OBPzk2WA&destination_airports=0&expected_price_source=share&expected_price_currency=thb&expected_price=5710"
     }
    },
    "stats": {
     "days": 1,
-    "min": 5928,
-    "p25": 5928,
-    "median": 5928,
-    "p75": 5928,
-    "max": 5928,
-    "suggest": 5900,
+    "min": 5710,
+    "p25": 5710,
+    "median": 5710,
+    "p75": 5710,
+    "max": 5710,
+    "suggest": 5700,
     "byDate": [
      {
       "d": "2026-12-09",
-      "p": 5928
+      "p": 5710
      }
     ]
    },
-   "lastAlertPrice": 5928,
-   "lastAlertAt": "2026-11-02T06:15:31.698Z"
+   "lastAlertPrice": 5710,
+   "lastAlertAt": "2026-11-02T09:57:28.011Z"
   },
   "r_hh7c0by": {
-   "sig": "ICN|BKK|oneway|2026-12-14|2026-12-14|||12:00|23:59|true",
+   "sig": "ICN|BKK|oneway|2026-12-14|2026-12-14|||||true",
    "history": [],
-   "scannedAt": "2026-11-02T06:15:31.698Z",
+   "scannedAt": "2026-11-02T09:57:28.011Z",
    "status": "empty",
    "error": "",
    "found": 0
