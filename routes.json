@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-11-02T01:51:12.306Z",
+ "updatedAt": "2026-11-02T01:51:26.309Z",
  "prefs": {
   "digest": true,
   "digestHour": 7
@@ -12,7 +12,7 @@
    "destination": "ICN",
    "tripType": "oneway",
    "departFrom": "2026-12-09",
-   "departTo": "2026-12-14",
+   "departTo": "2026-12-09",
    "timeFrom": "",
    "timeTo": "",
    "directOnly": true,
