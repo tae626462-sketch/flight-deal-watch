@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-11-02T14:49:13.901Z",
+ "updatedAt": "2026-11-02T14:50:48.697Z",
  "prefs": {
   "digest": true,
   "digestHour": 7
@@ -13,8 +13,8 @@
    "tripType": "roundtrip",
    "departFrom": "2026-12-08",
    "departTo": "2026-12-14",
-   "stayMin": 3,
-   "stayMax": 7,
+   "stayMin": 6,
+   "stayMax": 6,
    "timeFrom": "",
    "timeTo": "",
    "directOnly": true,
