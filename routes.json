@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-11-02T00:49:17.268Z",
+ "updatedAt": "2026-11-02T01:51:12.306Z",
  "prefs": {
   "digest": true,
   "digestHour": 7
@@ -28,7 +28,7 @@
    "destination": "BKK",
    "tripType": "oneway",
    "departFrom": "2026-12-14",
-   "departTo": "2026-12-17",
+   "departTo": "2026-12-14",
    "timeFrom": "12:00",
    "timeTo": "23:59",
    "directOnly": true,
