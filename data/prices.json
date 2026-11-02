@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-11-02T00:47:42.932Z",
+ "updatedAt": "2026-11-02T00:48:02.275Z",
  "currency": "THB",
  "lastDigest": "2026-11-02",
  "routes": {
@@ -9,12 +9,16 @@
     {
      "t": "2026-11-02T00:47:42.932Z",
      "p": 6303
+    },
+    {
+     "t": "2026-11-02T00:48:02.275Z",
+     "p": 6303
     }
    ],
-   "scannedAt": "2026-11-02T00:47:42.932Z",
+   "scannedAt": "2026-11-02T00:48:02.275Z",
    "status": "ok",
    "error": "",
-   "prevPrice": null,
+   "prevPrice": 6303,
    "cheapest": {
     "price": 6303,
     "airline": "TW",
