@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-11-02T16:16:49.105Z",
+ "updatedAt": "2026-11-06T02:55:14.531Z",
  "prefs": {
   "digest": true,
   "digestHour": 7
@@ -19,7 +19,7 @@
    "timeTo": "",
    "directOnly": true,
    "notifyNew": true,
-   "targetPrice": 15000,
+   "targetPrice": 20000,
    "dropPct": 10,
    "active": true
   }
